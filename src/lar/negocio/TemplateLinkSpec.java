@@ -6,7 +6,7 @@
 package lar.negocio;
 
 import java.util.Map;
-import lar.jena.Ontologia;
+import lar.jena.Ontology;
 import lar.telas.SidaUI;
 import lar.util.Comum;
 
@@ -87,7 +87,7 @@ public class TemplateLinkSpec {
                 + "    <Prefix id=\"dcterm\" namespace=\"http://purl.org/dc/terms/\"/>\n"
                 + "    <Prefix id=\"dc\" namespace=\"http://purl.org/dc/elements/1.1/\"/>\n";
         try {
-            for (Map.Entry<String, String> map : Ontologia.obtemPrefixosDaOntologiaDominio(SidaUI.ontologiaDeDominio).entrySet()) {
+            for (Map.Entry<String, String> map : Ontology.getOntologyPrefixies(SidaUI.ontologiaDeDominio).entrySet()) {
                 if(map.getKey() != ""){
                     prefixos += "    <Prefix id=\"" + map.getKey() + "\" namespace=\""+map.getValue()+"\"/>\n";
                 }

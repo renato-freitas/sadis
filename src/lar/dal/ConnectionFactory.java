@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lar.dal;
 
 import java.sql.Connection;
@@ -11,7 +6,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import lar.entidade.BancoDeDados;
+import lar.entidade.Database;
 import lar.modelo.Dataset;
 import lar.util.Comum;
 
@@ -23,10 +18,10 @@ public class ConnectionFactory {
 
     private static Connection conn;
     private static Dataset dataset;
-    private static BancoDeDados bd;
+    private static Database bd;
 
     //Esse construtor recebe as informações de acesso ao BD.
-    public ConnectionFactory(BancoDeDados bd) {
+    public ConnectionFactory(Database bd) {
 //        ConnectionFactory.dataset = ds;
         ConnectionFactory.bd = bd;
     }
@@ -46,9 +41,9 @@ public class ConnectionFactory {
 //                        dataset.getUsuario(),
 //                        dataset.getSenha());
                 conn = DriverManager.getConnection(
-                        bd.getServidor() + bd.getNome() + Comum.SSL,
-                        bd.getUsuario(),
-                        bd.getSenha());
+                        bd.getURL() + bd.getName() + Comum.SSL,
+                        bd.getUser(),
+                        bd.getPassword());
                 System.out.println("[***] Database connection OK.");
             } catch (SQLException | ClassNotFoundException | NullPointerException sqlex) {
                 Logger.getLogger(ConnectionFactory.class.getName()).log(Level.SEVERE, null, sqlex);
@@ -58,6 +53,30 @@ public class ConnectionFactory {
         return conn;
     }
 
+    
+    
+     /**
+     * Abre uma conexão com o BD Postgres.
+     * @return Conexão aberta.
+     */
+    public Connection getPostgresConnection() {
+        
+        if (conn == null) {
+            try {
+                Class.forName(Comum.POSTGRES_DRIVER);
+//                DriverManager.registerDriver(new com.);
+                conn = DriverManager.getConnection(
+                        bd.getURL() + bd.getName() + Comum.SSL,
+                        bd.getUser(),
+                        bd.getPassword());
+                System.out.println("[***] Database connection OK.");
+            } catch (SQLException | ClassNotFoundException | NullPointerException sqlex) {
+                Logger.getLogger(ConnectionFactory.class.getName()).log(Level.SEVERE, null, sqlex);
+                JOptionPane.showMessageDialog(null, "Was not possble find the dataset!");
+            }
+        }
+        return conn;
+    }
     /**
      * This close the dababase connection
      */

@@ -19,7 +19,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import lar.entidade.Assertion;
-import lar.jena.Ontologia;
+import lar.jena.Ontology;
 import lar.util.Comum;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.OntClass;
@@ -251,7 +251,7 @@ public class SidaUI extends javax.swing.JFrame {
             f = Comum.chooseFile();
             nomeDaOD = f.getName();
 
-            OntModel od = Ontologia.getOntologiaDeDominio(f);
+            OntModel od = Ontology.getOntology(f);
             ontologiaDeDominio = od; // Armazena a OD durante toda a aplicação.
             
             urlDaOD = od.getNsPrefixURI("");
@@ -304,16 +304,16 @@ public class SidaUI extends javax.swing.JFrame {
         DefaultMutableTreeNode propriedades = new DefaultMutableTreeNode("Properties");
         DefaultMutableTreeNode dados = new DefaultMutableTreeNode("Datatype");
 
-        for (OntClass classe : Ontologia.obtemClasses(ontologia)) {
+        Ontology.getClasses(ontologia).stream().map((classe) -> {
             System.out.println("[*** OntClass within tree]" + classe.getLocalName());
-            DefaultMutableTreeNode cls = new DefaultMutableTreeNode(classe.getLocalName());
+            return classe;
+        }).map((classe) -> new DefaultMutableTreeNode(classe.getLocalName())).forEachOrdered((cls) -> {
             classes.add(cls);
-        }
-        for (String propObjeto : Ontologia.obtemPropriedadesDoObjeto(ontologia)) {
-            DefaultMutableTreeNode po = new DefaultMutableTreeNode(propObjeto);
+        });
+        Ontology.getProperties(ontologia).stream().map((propObjeto) -> new DefaultMutableTreeNode(propObjeto)).forEachOrdered((po) -> {
             propriedades.add(po);
-        }
-        for (DatatypeProperty dado : Ontologia.obtemTipoDeDados(ontologia)) {
+        });
+        for (DatatypeProperty dado : Ontology.getDatatypes(ontologia)) {
             System.out.println(Comum.printTab("Datatypes da ontologia "+dado.toString()));
             String d = dado.toString();
             
@@ -381,7 +381,7 @@ public class SidaUI extends javax.swing.JFrame {
         }
         System.out.println("url do NameSpace => "+url);
         
-        for (Entry<String, String> map : Ontologia.obtemPrefixosDaOntologiaDominio(od).entrySet()) {
+        for (Entry<String, String> map : Ontology.getOntologyPrefixies(od).entrySet()) {
             System.out.println(Comum.printTab("Map<String, String>: "+map.getKey() + ":" + map.getValue()));
             if(map.getValue() == null ? url == null : map.getValue().equals(url)){
                 prefixo = map.getKey()+":"+prop;

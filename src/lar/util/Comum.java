@@ -12,13 +12,19 @@ import lar.telas.SidaUI;
  */
 public class Comum {
 
+    /*About Database*/
     public final static String NOME_BD_MYSQL = "tcc2";
-    public final static String DRIVER_MYSQL = "jdbc:mysql://localhost/";
-    public final static String DRIVER_POSTGRES = "jdbc:postgres://localhost/";
-    public final static String ROOT_MYSQL = "root";
-    public final static String SENHA_MYSQL = "r00t";
+    public final static String POSTGRES_BD_NAME = "sadis";
+    public final static String MYSQL_DRIVER = "jdbc:mysql://localhost/";
+    public final static String MYSQL_URL = "jdbc:mysql://localhost/";
+    public final static String MYSQL_ROOT = "root";
+    public final static String MYSQL_SENHA = "r00t";
+    public final static String POSTGRES_DRIVER = "org.postgresql.Driver";
+    public final static String POSTGRES_URL = "jdbc:postgresql://localhost:5432/";
+    public final static String POSTGRES_ROOT = "root";
+    public final static String POSTGRES_SENHA = "r00t";
     public final static String SSL = "?useSSL=false";
-
+    
     /**
      * Array com os nomes dos bancos de dados mais comuns.
      */

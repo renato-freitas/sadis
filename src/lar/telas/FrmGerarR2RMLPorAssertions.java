@@ -28,7 +28,7 @@ public class FrmGerarR2RMLPorAssertions extends javax.swing.JFrame {
      */
     public FrmGerarR2RMLPorAssertions() {
         initComponents();
-        preencheArvoreComListaAsserts(SidaUI.listaDosAsserts);
+        preencheArvoreComListaAsserts(FrmPrincipal.assertionsList);
         mudaIcone(this.treeListaAsserts);
     }
 

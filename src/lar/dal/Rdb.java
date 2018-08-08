@@ -7,16 +7,20 @@ package lar.dal;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import lar.entidade.BancoDeDados;
+import lar.entidade.Database;
 import lar.modelo.Dataset;
+import lar.util.Comum;
 
 /**
+ * Relational Database
  * @author renato
  */
 public class Rdb {
@@ -31,18 +35,40 @@ public class Rdb {
 	
     
     /** Obtém um lista com todas as tabelas do BD.
-     * @param ds
+     * @param db
      * @return s*/
 //    public static List<String> getTables(Dataset ds) {
-    public static List<String> getTables(BancoDeDados ds) {
+    public static List<String> getTables(Database db) {
         tables = new ArrayList<>();
         try {
-            dbmd = new ConnectionFactory(ds).obtemConexao().getMetaData();
+            if(db.getServer().equals(Comum.SGBDs[1])){
+                dbmd = new ConnectionFactory(db).obtemConexao().getMetaData();
+            }
+            if(db.getServer().equals(Comum.SGBDs[2])){
+                Connection conn;
+                conn = new ConnectionFactory(db).getPostgresConnection();
+                dbmd = new ConnectionFactory(db).getPostgresConnection().getMetaData();
+                
+                 String q = "SELECT datname as banco FROM pg_database";
+                 PreparedStatement stmt = conn.prepareStatement(q);
+                ResultSet rs;
+
+                String query = "Select * from pg_tables Where tableowner = '"+db.getUser()+"'";
+               
+                System.out.println(q);
+                rs = stmt.executeQuery();
+                while (rs.next()) {
+//                    String lastName = rs.getString("Lname");
+                    System.out.println(Comum.printTab(rs.toString()));
+                }
+                
+            }
+//            dbmd = new ConnectionFactory(db).obtemConexao().getMetaData();
 
             try (ResultSet rs = dbmd.getTables(catalog, schema, "%", TYPE_OF_TABLES)) {
                 while (rs.next()) {
                     tables.add(rs.getString(3));
-//                    System.out.print("getTables(): "+rs.getString(3) + "\n");
+                    System.out.print("getTables(): "+rs.getString(3) + "\n");
                 }   //essa linha é só pra visualizar melhor a saída do código. Ele poderá ser eliminado posteriomente.
                 
                 //getColumnsOfTable();

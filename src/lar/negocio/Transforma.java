@@ -6,7 +6,7 @@
 package lar.negocio;
 
 import javax.swing.JOptionPane;
-import lar.entidade.BancoDeDados;
+import lar.entidade.Database;
 
 import lar.modelo.Dataset;
 import lar.util.Comum;
@@ -36,7 +36,7 @@ public class Transforma {
         tableToRML(ds);
     }
 
-    public Transforma(String in_ttl, BancoDeDados ds) {
+    public Transforma(String in_ttl, Database ds) {
 
         comando = new String[3];
         comando[0] = "bash";
@@ -66,7 +66,7 @@ public class Transforma {
         }
     }
 
-    public void rml2NTriple(String in, BancoDeDados ds) {
+    public void rml2NTriple(String in, Database ds) {
         try {
 
             comando[2] = mysqlStringConnectionToDump(in, ds);
@@ -92,14 +92,14 @@ public class Transforma {
 
     /** Este tem a opção de escolhe o path do arquivo ttl, onde salvar o dump gerado e o nome do dump.
      */
-    public String mysqlStringConnectionToDump(String in_ttl, BancoDeDados ds) {
+    public String mysqlStringConnectionToDump(String in_ttl, Database ds) {
 
         String config
                 = "resources/d2rqlib/dump-rdf"
-                + " -u " + ds.getUsuario()
-                + " -p " + ds.getSenha()
+                + " -u " + ds.getUser()
+                + " -p " + ds.getPassword()
                 + " -f n-triple"
-                + " -j jdbc:mysql://localhost/" + ds.getNome()
+                + " -j jdbc:mysql://localhost/" + ds.getName()
                 + " /tmp/" + in_ttl
                 + " > /tmp/" + Comum.cortaExtensao(in_ttl) + ".nt";
 

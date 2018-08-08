@@ -1,4 +1,3 @@
-
 package lar.telas;
 
 import java.util.Iterator;
@@ -8,7 +7,7 @@ import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import lar.dal.Rdb;
-import lar.entidade.BancoDeDados;
+import lar.entidade.Database;
 import lar.util.Comum;
 
 /**
@@ -20,7 +19,7 @@ public class FrmEscolherBancoDeDados extends javax.swing.JFrame {
     private boolean statusCamposObrigatorios = true;
     public DefaultListModel listModel;
     public DefaultTreeModel arvBaseDeDados;
-    public static BancoDeDados bdSession;
+    public static Database bdSession;
     public static String nomeBD;
 
     public DefaultListModel getListModel() {
@@ -48,36 +47,35 @@ public class FrmEscolherBancoDeDados extends javax.swing.JFrame {
     /**Retorna a base de dados com as crendeciais de acesso
      * @return BancoDeDados.
      */
-    public BancoDeDados getEntidade() {
-        BancoDeDados bd = new BancoDeDados();
+    public Database getEntidade() {
+        Database bd = new Database();
 
         if (cbSgbds.getSelectedItem() != "") {
             String itemCombo = cbSgbds.getSelectedItem().toString();
             if (!"".equals(itemCombo)) {
                 if (Comum.SGBDs[1].equals(itemCombo)) {
-                    bd.setServidor(Comum.DRIVER_MYSQL);
+                    bd.setURL(Comum.MYSQL_URL);
                 }
                 if (Comum.SGBDs[2].equals(itemCombo)) {
-
-                    bd.setServidor(Comum.DRIVER_POSTGRES);
+                    bd.setURL(Comum.POSTGRES_URL);
                 }
             }
         } else {
             statusCamposObrigatorios = false;
         }
         if (!"".equals(this.txtDataset.getText())) {
-            bd.setNome(this.txtDataset.getText());
+            bd.setName(this.txtDataset.getText());
         } else {
             statusCamposObrigatorios = false;
         }
         if (!"".equals(this.txtUsuario.getText())) {
-            bd.setUsuario(this.txtUsuario.getText());
+            bd.setUser(this.txtUsuario.getText());
         } else { 
             statusCamposObrigatorios = false;
         }
         String pwd = new String(this.txtSenha.getPassword());
         if (!"".equals(pwd)) {
-            bd.setSenha(pwd);
+            bd.setPassword(pwd);
         } else {
             statusCamposObrigatorios = false;
         }
@@ -208,14 +206,14 @@ public class FrmEscolherBancoDeDados extends javax.swing.JFrame {
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
 
-        BancoDeDados bd = this.getEntidade();
+        Database bd = this.getEntidade();
 
         if (statusCamposObrigatorios) {
             List<String> tb = Rdb.getTables(bd);
             if (tb != null) {
                 Iterator it_tab = tb.iterator();
 
-                DefaultMutableTreeNode raiz = new DefaultMutableTreeNode(bd.getNome());
+                DefaultMutableTreeNode raiz = new DefaultMutableTreeNode(bd.getName());
 
                 while (it_tab.hasNext()) {
                     String tableName = (String) it_tab.next();

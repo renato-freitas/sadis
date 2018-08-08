@@ -5,19 +5,55 @@
  */
 package lar.telas;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import lar.dal.Rdb;
+import lar.entidade.Assertion;
+import lar.entidade.Database;
+import lar.jena.Ontology;
+import lar.util.Comum;
+import org.apache.jena.ontology.DatatypeProperty;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+
 /**
  *
- * @author renato
+ * @author Renato Freitas
+ * @since 27/06/2018
  */
 public class FrmPrincipal extends javax.swing.JFrame {
 
-    /**
-     * Creates new form FrmPrincipal
-     */
+    public static String ontologyName = "File Name";
+    public static OntModel domainOntology;
+    public static String ontologyUrl = "";
+    public static String columnsToSQL = "";
+    public static List<Assertion> assertionsList;
+    private String assertBD = "";
+    private String assertOD = "";
+    
+    
+    
     public FrmPrincipal() {
         initComponents();
+        this.arvBD.setModel(null);
+        this.arvOD.setModel(null);
+        assertionsList = new ArrayList<>();
     }
 
+    
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -33,17 +69,21 @@ public class FrmPrincipal extends javax.swing.JFrame {
         tabMapping = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTree2 = new javax.swing.JTree();
+        arvBD = new javax.swing.JTree();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTree3 = new javax.swing.JTree();
-        btnAbrirOD = new javax.swing.JButton();
+        arvOD = new javax.swing.JTree();
+        btnOpenOntology = new javax.swing.JButton();
         txtOD = new javax.swing.JTextField();
-        btnAbrirBD = new javax.swing.JButton();
+        btnOpenDB = new javax.swing.JButton();
         txtBD = new javax.swing.JTextField();
-        btnVerAssercoes = new javax.swing.JButton();
+        btnAbrirFrmAssertions = new javax.swing.JButton();
+        lblDatasetSchema = new javax.swing.JLabel();
+        lblOntTargetVocabulary = new javax.swing.JLabel();
+        txtAssertions = new javax.swing.JTextField();
+        btnSaveAssertions = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txtAreaLinkSpec = new javax.swing.JTextArea();
         lblDatasetSource = new javax.swing.JLabel();
         lblDatasetTarget = new javax.swing.JLabel();
         cbDatasetSource = new javax.swing.JComboBox<>();
@@ -58,13 +98,16 @@ public class FrmPrincipal extends javax.swing.JFrame {
         cbEditLinkSpecFile = new javax.swing.JComboBox<>();
         btnSave = new javax.swing.JButton();
         btnCloseNoSave = new javax.swing.JButton();
-        btnGetLinkSpec = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        btnSetLinkSpec = new javax.swing.JButton();
+        btnSaveOtherFolder = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
+
+        jPanel1.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jLabel2.setText("Semi Automatic Data Integration Suite - SADIS");
+        jLabel2.setText("SADIS - Semi Automatic Data Integration Suite");
 
         jButton1.setText("jButton1");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -80,9 +123,9 @@ public class FrmPrincipal extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(170, 170, 170)
                 .addComponent(jLabel2)
-                .addGap(115, 115, 115))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -94,31 +137,70 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jScrollPane2.setViewportView(jTree2);
+        jScrollPane2.setViewportView(arvBD);
 
-        jScrollPane3.setViewportView(jTree3);
+        jScrollPane3.setViewportView(arvOD);
 
-        btnAbrirOD.setText("Open Domain Ontolgy");
+        btnOpenOntology.setText("Open Domain Ontolgy");
+        btnOpenOntology.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpenOntologyActionPerformed(evt);
+            }
+        });
 
-        btnAbrirBD.setText("Open Dataset");
+        btnOpenDB.setText("Open Dataset");
+        btnOpenDB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpenDBActionPerformed(evt);
+            }
+        });
 
-        btnVerAssercoes.setText("See all Assertions");
+        btnAbrirFrmAssertions.setText("See all Assertions");
+        btnAbrirFrmAssertions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAbrirFrmAssertionsActionPerformed(evt);
+            }
+        });
+
+        lblDatasetSchema.setText("Dataset (Schema)");
+
+        lblOntTargetVocabulary.setText("Ontology Target (Vocabulary)");
+
+        btnSaveAssertions.setText("Save Assertions");
+        btnSaveAssertions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveAssertionsActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(69, 69, 69)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnAbrirOD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnAbrirBD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtOD)
-                    .addComponent(txtBD)
-                    .addComponent(btnVerAssercoes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(txtAssertions, javax.swing.GroupLayout.PREFERRED_SIZE, 809, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnSaveAssertions, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(lblDatasetSchema)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(lblOntTargetVocabulary)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(btnOpenOntology, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnOpenDB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtOD)
+                                .addComponent(txtBD))
+                            .addComponent(btnAbrirFrmAssertions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
 
@@ -127,32 +209,39 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblDatasetSchema)
+                    .addComponent(lblOntTargetVocabulary))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(btnAbrirOD)
+                        .addComponent(btnOpenOntology)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtOD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAbrirBD)
+                        .addComponent(btnOpenDB)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtBD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnVerAssercoes)))
-                .addGap(0, 190, Short.MAX_VALUE))
+                        .addComponent(btnAbrirFrmAssertions)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3))
+                .addGap(15, 15, 15)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtAssertions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSaveAssertions))
+                .addContainerGap())
         );
-
-        jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jScrollPane2, jScrollPane3});
 
         tabMapping.addTab("Mapping", jPanel2);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        txtAreaLinkSpec.setColumns(20);
+        txtAreaLinkSpec.setRows(5);
+        jScrollPane1.setViewportView(txtAreaLinkSpec);
 
         lblDatasetSource.setText("Dataset Source");
 
@@ -171,19 +260,24 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel1)
-                        .addComponent(cbCompareType, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(cbCompareProperty, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                                .addComponent(lblCompareProperty)
+                                .addGap(62, 62, 62))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                                .addComponent(cbCompareProperty, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18))))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(cbCompareType, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(btnAddCompare)
                 .addContainerGap())
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblCompareProperty)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel4Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cbCompareProperty, cbCompareType});
@@ -197,7 +291,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(cbCompareProperty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(24, 24, 24)
+                        .addGap(18, 18, 18)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cbCompareType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -211,9 +305,9 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         btnCloseNoSave.setText("Close no save");
 
-        btnGetLinkSpec.setText("Specify Semantic Links");
+        btnSetLinkSpec.setText("Specify Semantic Links");
 
-        jButton5.setText("Save in other folder");
+        btnSaveOtherFolder.setText("Save in other folder");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -221,29 +315,24 @@ public class FrmPrincipal extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbDatasetSource, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cbDatasetTarget, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel3)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addContainerGap())
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(lblDatasetTarget)
-                                .addComponent(lblDatasetSource)
-                                .addComponent(cbDatasetSource, 0, 178, Short.MAX_VALUE)
-                                .addComponent(cbDatasetTarget, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGap(93, 93, 93)))
-                    .addComponent(cbEditLinkSpecFile, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSave)
                     .addComponent(btnCloseNoSave)
-                    .addComponent(jButton5)
-                    .addComponent(btnGetLinkSpec)))
+                    .addComponent(btnSaveOtherFolder)
+                    .addComponent(btnSetLinkSpec)
+                    .addComponent(lblDatasetSource)
+                    .addComponent(lblDatasetTarget)
+                    .addComponent(cbEditLinkSpecFile, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
-        jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnCloseNoSave, btnGetLinkSpec, btnSave, jButton5});
+        jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnCloseNoSave, btnSave, btnSaveOtherFolder, btnSetLinkSpec});
 
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -269,9 +358,9 @@ public class FrmPrincipal extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnCloseNoSave)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
-                        .addComponent(btnGetLinkSpec, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnSaveOtherFolder)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
+                        .addComponent(btnSetLinkSpec, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
         );
@@ -283,7 +372,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(tabMapping)
                 .addContainerGap())
@@ -292,18 +381,165 @@ public class FrmPrincipal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(tabMapping)
                 .addContainerGap())
         );
 
-        pack();
+        setSize(new java.awt.Dimension(1091, 720));
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Retorna o prefixo do NameSpace
+     * @param datatype url do DatatypeProperty.
+     * @param od Ontologia de Domínio.
+     * @return O prefixo do NameSpace definido na OD.
+     */
+    private String getNSPrefix(String datatype, OntModel od) {
+        String prefixo = "";
+        String url = "";
+        String prop = "";
+        if (!datatype.contains("#")) {
+            url = Comum.cortaAte(datatype, '/');
+            prop = Comum.cortaDepoisDe(datatype, '/');
+
+        } else {
+            url = Comum.cortaAte(datatype, '#');
+            prop = Comum.cortaDepoisDe(datatype, '#');
+        }
+        System.out.println("url do NameSpace => "+url);
+        
+        for (Map.Entry<String, String> map : Ontology.getOntologyPrefixies(od).entrySet()) {
+            System.out.println(Comum.printTab("Map<String, String>: "+map.getKey() + ":" + map.getValue()));
+            if(map.getValue() == null ? url == null : map.getValue().equals(url)){
+                prefixo = map.getKey()+":"+prop;
+                System.out.println("Dentro do if => retorno no método retornarPrefixoNs: "+prefixo);
+                return prefixo;
+            }
+        }
+        return prefixo;
+    }
+    
+    
+    /** Fill the Domain Ontology Tree. */
+    private void fillOntoTree(OntModel ontologia, String nomeArquivo) {
+        //root
+        DefaultMutableTreeNode onto = new DefaultMutableTreeNode(nomeArquivo);
+
+        DefaultMutableTreeNode classes = new DefaultMutableTreeNode("Classes");
+        DefaultMutableTreeNode propriedades = new DefaultMutableTreeNode("Properties");
+        DefaultMutableTreeNode dados = new DefaultMutableTreeNode("Datatype");
+
+        for (OntClass classe : Ontology.getClasses(ontologia)) {
+            System.out.println("[*** OntClass within tree]" + classe.getLocalName());
+            DefaultMutableTreeNode cls = new DefaultMutableTreeNode(classe.getLocalName());
+            classes.add(cls);
+        }
+        for (String propObjeto : Ontology.getProperties(ontologia)) {
+            DefaultMutableTreeNode po = new DefaultMutableTreeNode(propObjeto);
+            propriedades.add(po);
+        }
+        for (DatatypeProperty dado : Ontology.getDatatypes(ontologia)) {
+            System.out.println(Comum.printTab("Datatypes da ontologia "+dado.toString()));
+            String d = dado.toString();
+            
+//          usae map<String prefixo, String url> here.
+            String pre = this.getNSPrefix(d, ontologia);
+            System.out.println(Comum.printTab("prefixo encontrado: "+pre));
+            
+            DefaultMutableTreeNode dp = new DefaultMutableTreeNode(pre);
+            dados.add(dp);
+        }
+        onto.add(classes);
+        onto.add(propriedades);
+        onto.add(dados);
+        
+        DefaultTreeModel arvoreOD = new DefaultTreeModel(onto);
+
+        this.arvOD.setModel(arvoreOD);
+    }
+    
+    
+    /** Este método adicionar um ícone ao nó correspondente.
+     * @param tree - Árvore
+     */
+    public void changeIcon(JTree tree) {
+        tree.setCellRenderer(new DefaultTreeCellRenderer() {
+            private final Icon pkIcon = new ImageIcon(getClass().getResource("/lar/resources/img/pk.png"));
+            private final Icon setaDireitaIcon = new ImageIcon(getClass().getResource("/lar/resources/img/seta_direita.png"));
+
+            @Override
+            public Component getTreeCellRendererComponent(JTree tree, Object value,
+                    boolean selected, boolean expanded, boolean isLeaf, int row,
+                    boolean focused) {
+                Component componente = super.getTreeCellRendererComponent(tree, value, selected,
+                        expanded, isLeaf, row, focused);
+                if (value.toString().contains("(pk)")) {
+                    setIcon(pkIcon);
+                } else if (isLeaf == true) {
+                    setIcon(setaDireitaIcon);
+                }
+                return componente;
+            }
+        });
+    }
+    
+    
+    /*EVENTOS*/
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         new SidaUI().setVisible(true);
-        // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btnOpenOntologyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenOntologyActionPerformed
+        File f;
+        try {
+            f = Comum.chooseFile();
+            ontologyName = f.getName();
+
+            OntModel od = Ontology.getOntology(f);
+            domainOntology = od; // Armazena a OD durante toda a aplicação.
+            
+            ontologyUrl = od.getNsPrefixURI("");
+            this.txtOD.setText(ontologyName);
+            this.fillOntoTree(od, ontologyName);
+        } catch (FileNotFoundException e) {}
+    }//GEN-LAST:event_btnOpenOntologyActionPerformed
+
+    private void btnOpenDBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenDBActionPerformed
+        //Necessário instanciar
+//        FrmEscolherBancoDeDados frmBD = new FrmEscolherBancoDeDados();
+//        FrmChooseDatabase frmCdb = new FrmChooseDatabase();
+//        frmCdb.setVisible(true);
+        Database bd  = new Database();
+        bd.setServer(Comum.SGBDs[2]);
+        bd.setName("Sadis");
+        bd.setURL(Comum.POSTGRES_URL);
+        bd.setUser("postgres");
+        bd.setPassword("r00t");
+
+            List<String> tb = Rdb.getTables(bd);
+        
+        this.txtBD.setText(Comum.NOME_BD_MYSQL);
+//        this.arvBD.setModel(frmCdb.arvBaseDeDados);
+        changeIcon(arvBD);
+    }//GEN-LAST:event_btnOpenDBActionPerformed
+
+    private void btnAbrirFrmAssertionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAbrirFrmAssertionsActionPerformed
+        new FrmGerarR2RMLPorAssertions().setVisible(true);
+    }//GEN-LAST:event_btnAbrirFrmAssertionsActionPerformed
+
+    private void btnSaveAssertionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveAssertionsActionPerformed
+        Assertion assertion = new Assertion();
+        assertion.setOrigem(assertBD);
+        assertion.setAlvo(assertOD);
+        
+        System.out.println("[***Assertion]"+assertion.getOrigem() + assertion.getAlvo());
+        assertionsList.add(assertion);
+        this.txtAssertions.setBackground(Color.WHITE);
+        this.txtAssertions.setText("");
+    }//GEN-LAST:event_btnSaveAssertionsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -341,20 +577,23 @@ public class FrmPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAbrirBD;
-    private javax.swing.JButton btnAbrirOD;
+    private javax.swing.JTree arvBD;
+    private javax.swing.JTree arvOD;
+    private javax.swing.JButton btnAbrirFrmAssertions;
     private javax.swing.JButton btnAddCompare;
     private javax.swing.JButton btnCloseNoSave;
-    private javax.swing.JButton btnGetLinkSpec;
+    private javax.swing.JButton btnOpenDB;
+    private javax.swing.JButton btnOpenOntology;
     private javax.swing.JButton btnSave;
-    private javax.swing.JButton btnVerAssercoes;
+    private javax.swing.JButton btnSaveAssertions;
+    private javax.swing.JButton btnSaveOtherFolder;
+    private javax.swing.JButton btnSetLinkSpec;
     private javax.swing.JComboBox<String> cbCompareProperty;
     private javax.swing.JComboBox<String> cbCompareType;
     private javax.swing.JComboBox<String> cbDatasetSource;
     private javax.swing.JComboBox<String> cbDatasetTarget;
     private javax.swing.JComboBox<String> cbEditLinkSpecFile;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -365,13 +604,14 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTree jTree2;
-    private javax.swing.JTree jTree3;
     private javax.swing.JLabel lblCompareProperty;
+    private javax.swing.JLabel lblDatasetSchema;
     private javax.swing.JLabel lblDatasetSource;
     private javax.swing.JLabel lblDatasetTarget;
+    private javax.swing.JLabel lblOntTargetVocabulary;
     private javax.swing.JTabbedPane tabMapping;
+    private javax.swing.JTextArea txtAreaLinkSpec;
+    private javax.swing.JTextField txtAssertions;
     private javax.swing.JTextField txtBD;
     private javax.swing.JTextField txtOD;
     // End of variables declaration//GEN-END:variables

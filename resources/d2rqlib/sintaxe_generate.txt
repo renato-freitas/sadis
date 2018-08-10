@@ -1,2 +1,0 @@
-./generate-mapping -u root -p r00t -d com.mysql.jdbc.Driver --r2rml jdbc:mysql://localhost/tcc2 > outfile.ttl
-

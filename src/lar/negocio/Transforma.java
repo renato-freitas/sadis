@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 import lar.entidade.Database;
 
 import lar.modelo.Dataset;
-import lar.util.Comum;
+import lar.util.global;
 
 /**
  *
@@ -101,7 +101,7 @@ public class Transforma {
                 + " -f n-triple"
                 + " -j jdbc:mysql://localhost/" + ds.getName()
                 + " /tmp/" + in_ttl
-                + " > /tmp/" + Comum.cortaExtensao(in_ttl) + ".nt";
+                + " > /tmp/" + global.cortaExtensao(in_ttl) + ".nt";
 
         return config;
     }

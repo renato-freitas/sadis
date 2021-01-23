@@ -1,7 +1,7 @@
 package lar.negocio;
 
 import lar.telas.FrmPrincipal;
-import lar.util.Comum;
+import lar.util.global;
 
 /**
  *
@@ -20,7 +20,7 @@ public class TemplatesR2RML {
                 "@prefix rr: <http://www.w3.org/ns/r2rml#>.\n" +
                 "@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.\n" +
                 "@prefix foaf: <http://xmlns.com/foaf/0.1/>.\n"+
-                "@prefix "+ Comum.cortaExtensao(FrmPrincipal.ontologyName)+": <"+FrmPrincipal.ontologyUrl+">.";
+                "@prefix "+ global.cortaExtensao(FrmPrincipal.domainOntologyName)+": <"+FrmPrincipal.ontologyUrl+">.";
     }
     
     public static String mapeaTabelaLogica(String tabela, String sql) {

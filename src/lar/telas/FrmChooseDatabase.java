@@ -9,7 +9,7 @@ import javax.swing.tree.DefaultTreeModel;
 import lar.dal.Rdb;
 import lar.entidade.Database;
 import static lar.telas.FrmEscolherBancoDeDados.bdSession;
-import lar.util.Comum;
+import lar.util.global;
 
 /**
  *
@@ -48,15 +48,15 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
         if (this.cbDbServer.getSelectedItem() != "") {
             String itemCombo = this.cbDbServer.getSelectedItem().toString();
             if (!"".equals(itemCombo)) {
-                if (Comum.SGBDs[1].equals(itemCombo)) {
-                    bd.setServer(Comum.SGBDs[1]);
-                    bd.setURL(Comum.MYSQL_URL);
-                    this.txtURL.setText(Comum.MYSQL_URL);
+                if (global.SGBDs[1].equals(itemCombo)) {
+                    bd.setServer(global.SGBDs[1]);
+                    bd.setURL(global.MYSQL_URL);
+                    this.txtURL.setText(global.MYSQL_URL);
                 }
-                if (Comum.SGBDs[2].equals(itemCombo)) {
-                    bd.setServer(Comum.SGBDs[2]);
-                    bd.setURL(Comum.POSTGRES_URL);
-                    this.txtURL.setText(Comum.POSTGRES_URL);
+                if (global.SGBDs[2].equals(itemCombo)) {
+                    bd.setServer(global.SGBDs[2]);
+                    bd.setURL(global.POSTGRES_URL);
+                    this.txtURL.setText(global.POSTGRES_URL);
                 }
             }
         } else {
@@ -87,7 +87,7 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
     
     /*Eventos*/
     private void loadCombobox() {
-        for (String SGBD : Comum.SGBDs){
+        for (String SGBD : global.SGBDs){
             this.cbDbServer.addItem(SGBD); 
         }
     }
@@ -275,7 +275,7 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Was not possible find the dataset!");
             }
         } else {
-            Comum.exibeMenssagemDeErro();
+            global.exibeMenssagemDeErro();
             statusFieldsRequireds = true;
         }
     }//GEN-LAST:event_btnOkActionPerformed
@@ -288,11 +288,11 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
     private void cbDbServerItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbDbServerItemStateChanged
         if (this.cbDbServer.getSelectedItem() != "") {
             String itemCombo = this.cbDbServer.getSelectedItem().toString();
-            if (Comum.SGBDs[1].equals(itemCombo)) {
-                this.txtURL.setText(Comum.MYSQL_URL);
+            if (global.SGBDs[1].equals(itemCombo)) {
+                this.txtURL.setText(global.MYSQL_URL);
             }
-            if (Comum.SGBDs[2].equals(itemCombo)) {
-                this.txtURL.setText(Comum.POSTGRES_URL);
+            if (global.SGBDs[2].equals(itemCombo)) {
+                this.txtURL.setText(global.POSTGRES_URL);
             }
         } 
     }//GEN-LAST:event_cbDbServerItemStateChanged

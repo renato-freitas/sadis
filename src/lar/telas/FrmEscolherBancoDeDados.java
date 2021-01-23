@@ -8,7 +8,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import lar.dal.Rdb;
 import lar.entidade.Database;
-import lar.util.Comum;
+import lar.util.global;
 
 /**
  * @author Renato Freitas
@@ -38,7 +38,7 @@ public class FrmEscolherBancoDeDados extends javax.swing.JFrame {
     }
 
     private void carregarCombos() {
-        for (String SGBD : Comum.SGBDs){
+        for (String SGBD : global.SGBDs){
             cbSgbds.addItem(SGBD); 
         }
     }
@@ -53,11 +53,11 @@ public class FrmEscolherBancoDeDados extends javax.swing.JFrame {
         if (cbSgbds.getSelectedItem() != "") {
             String itemCombo = cbSgbds.getSelectedItem().toString();
             if (!"".equals(itemCombo)) {
-                if (Comum.SGBDs[1].equals(itemCombo)) {
-                    bd.setURL(Comum.MYSQL_URL);
+                if (global.SGBDs[1].equals(itemCombo)) {
+                    bd.setURL(global.MYSQL_URL);
                 }
-                if (Comum.SGBDs[2].equals(itemCombo)) {
-                    bd.setURL(Comum.POSTGRES_URL);
+                if (global.SGBDs[2].equals(itemCombo)) {
+                    bd.setURL(global.POSTGRES_URL);
                 }
             }
         } else {
@@ -251,7 +251,7 @@ public class FrmEscolherBancoDeDados extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Was not possible find the dataset!");
             }
         } else {
-            Comum.exibeMenssagemDeErro();
+            global.exibeMenssagemDeErro();
             statusCamposObrigatorios = true;
         }
     }//GEN-LAST:event_btnOkActionPerformed

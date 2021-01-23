@@ -59,7 +59,11 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButton1" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="170" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="btnOpenManagerRdf" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Component id="btnDiseases" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -72,6 +76,8 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnOpenManagerRdf" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnDiseases" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -93,6 +99,22 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnOpenManagerRdf">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="RDFs"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnOpenManagerRdfActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnDiseases">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Diseases"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDiseasesActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
@@ -122,16 +144,16 @@
                               <Component id="btnSaveAssertions" min="-2" pref="178" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="2" attributes="0">
-                                  <Component id="lblDatasetSchema" alignment="2" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jScrollPane2" linkSize="5" alignment="2" min="-2" pref="380" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="lblDatasetSchema" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jScrollPane2" linkSize="5" alignment="1" min="-2" pref="380" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="2" attributes="0">
                                   <Component id="lblOntTargetVocabulary" alignment="2" min="-2" max="-2" attributes="0"/>
                                   <Component id="jScrollPane3" linkSize="5" alignment="2" min="-2" pref="396" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="29" max="32767" attributes="0"/>
+                              <EmptySpace pref="43" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="103" alignment="1" groupAlignment="0" max="-2" attributes="0">
                                       <Component id="btnOpenOntology" alignment="0" max="32767" attributes="0"/>
@@ -213,7 +235,8 @@
             </Container>
             <Component class="javax.swing.JButton" name="btnOpenOntology">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Open Domain Ontolgy"/>
+                <Property name="text" type="java.lang.String" value="Select Domain Ontology"/>
+                <Property name="name" type="java.lang.String" value="btnSelectDomainOntology" noResource="true"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnOpenOntologyActionPerformed"/>

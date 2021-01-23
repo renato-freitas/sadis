@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import lar.entidade.Database;
 import lar.modelo.Dataset;
-import lar.util.Comum;
+import lar.util.global;
 
 /**
  *
@@ -35,13 +35,8 @@ public class ConnectionFactory {
         if (conn == null) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
-                DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-//                conn = DriverManager.getConnection(
-//                        dataset.getServidorBD() + dataset.getNomeDataset() + Comum.SSL,
-//                        dataset.getUsuario(),
-//                        dataset.getSenha());
-                conn = DriverManager.getConnection(
-                        bd.getURL() + bd.getName() + Comum.SSL,
+//                DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+                conn = DriverManager.getConnection(bd.getURL() + bd.getName() + global.SSL,
                         bd.getUser(),
                         bd.getPassword());
                 System.out.println("[***] Database connection OK.");
@@ -63,16 +58,15 @@ public class ConnectionFactory {
         
         if (conn == null) {
             try {
-                Class.forName(Comum.POSTGRES_DRIVER);
+                Class.forName(global.POSTGRES_DRIVER);
 //                DriverManager.registerDriver(new com.);
-                conn = DriverManager.getConnection(
-                        bd.getURL() + bd.getName() + Comum.SSL,
+                conn = DriverManager.getConnection(bd.getURL() + bd.getName() + global.SSL,
                         bd.getUser(),
                         bd.getPassword());
                 System.out.println("[***] Postgres DB connection OK.");
             } catch (SQLException | ClassNotFoundException | NullPointerException sqlex) {
                 Logger.getLogger(ConnectionFactory.class.getName()).log(Level.SEVERE, null, sqlex);
-                JOptionPane.showMessageDialog(null, Comum.CONNECTION_FAILED);
+                JOptionPane.showMessageDialog(null, global.CONNECTION_FAILED);
             }
         }
         return conn;

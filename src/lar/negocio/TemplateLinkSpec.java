@@ -8,7 +8,7 @@ package lar.negocio;
 import java.util.Map;
 import lar.jena.Ontology;
 import lar.telas.SidaUI;
-import lar.util.Comum;
+import lar.util.global;
 
 /**
  *
@@ -18,8 +18,8 @@ public class TemplateLinkSpec {
     
     
     private String geraTemplateLinkSpec(String dsSource, String dsTarget, String outFile){
-		String source = Comum.cortaExtensao(dsSource);
-		String target = Comum.cortaExtensao(dsTarget);
+		String source = global.cortaExtensao(dsSource);
+		String target = global.cortaExtensao(dsTarget);
 		return "<Silk>\n"+
   "<Prefixes>\n"+
   "    <Prefix id=\"rdf\" namespace=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"/>\n"+
@@ -95,7 +95,7 @@ public class TemplateLinkSpec {
         } catch (Exception e) {
         }
         prefixos += "</Prefixes>\n";
-        System.out.println(Comum.printTab(prefixos));
+        System.out.println(global.printTab(prefixos));
         return prefixos;
     }
 	

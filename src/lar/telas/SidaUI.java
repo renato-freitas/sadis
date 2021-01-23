@@ -20,7 +20,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import lar.entidade.Assertion;
 import lar.jena.Ontology;
-import lar.util.Comum;
+import lar.util.global;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
@@ -237,7 +237,7 @@ public class SidaUI extends javax.swing.JFrame {
         FrmEscolherBancoDeDados frmBD = new FrmEscolherBancoDeDados();
         frmBD.setVisible(true);
         
-        txtDB.setText(Comum.NOME_BD_MYSQL);
+        txtDB.setText(global.NOME_BD_MYSQL);
         arvBD.setModel(frmBD.arvBaseDeDados);
         mudaIcone(arvBD);
     }
@@ -248,7 +248,7 @@ public class SidaUI extends javax.swing.JFrame {
     private void btnAbrirODActionPerformed(java.awt.event.ActionEvent evt) {
         File f;
         try {
-            f = Comum.chooseFile();
+            f = global.chooseFile();
             nomeDaOD = f.getName();
 
             OntModel od = Ontology.getOntology(f);
@@ -314,12 +314,12 @@ public class SidaUI extends javax.swing.JFrame {
             propriedades.add(po);
         });
         for (DatatypeProperty dado : Ontology.getDatatypes(ontologia)) {
-            System.out.println(Comum.printTab("Datatypes da ontologia "+dado.toString()));
+            System.out.println(global.printTab("Datatypes da ontologia "+dado.toString()));
             String d = dado.toString();
             
 //          usar map<String prefixo, String url> aqui.
             String pre = this.retornaPrefixoNS(d, ontologia);
-            System.out.println(Comum.printTab("prefixo encontrado: "+pre));
+            System.out.println(global.printTab("prefixo encontrado: "+pre));
             
             DefaultMutableTreeNode dp = new DefaultMutableTreeNode(pre);
             dados.add(dp);
@@ -370,19 +370,19 @@ public class SidaUI extends javax.swing.JFrame {
         if (!datatype.contains("#")) {
 //            url = datatype.substring(0, datatype.lastIndexOf('/') + 1);
 //            prop = datatype.substring(datatype.lastIndexOf('/') + 1, datatype.length());
-            url = Comum.cortaAte(datatype, '/');
-            prop = Comum.cortaDepoisDe(datatype, '/');
+            url = global.cortaAte(datatype, '/');
+            prop = global.cortaDepoisDe(datatype, '/');
 
         } else {
 //            url = datatype.substring(0, datatype.lastIndexOf('#') + 1);
 //            prop = datatype.substring(datatype.lastIndexOf('#') + 1, datatype.length());
-            url = Comum.cortaAte(datatype, '#');
-            prop = Comum.cortaDepoisDe(datatype, '#');
+            url = global.cortaAte(datatype, '#');
+            prop = global.cortaDepoisDe(datatype, '#');
         }
         System.out.println("url do NameSpace => "+url);
         
         for (Entry<String, String> map : Ontology.getOntologyPrefixies(od).entrySet()) {
-            System.out.println(Comum.printTab("Map<String, String>: "+map.getKey() + ":" + map.getValue()));
+            System.out.println(global.printTab("Map<String, String>: "+map.getKey() + ":" + map.getValue()));
             if(map.getValue() == null ? url == null : map.getValue().equals(url)){
                 prefixo = map.getKey()+":"+prop;
                 System.out.println("Dentro do if => retorno no método retornarPrefixoNs: "+prefixo);

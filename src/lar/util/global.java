@@ -15,7 +15,7 @@ import lar.telas.SidaUI;
  *
  * @author Renato Freitas
  */
-public class Comum {
+public class global {
 
     /*About Database*/
     public final static String NOME_BD_MYSQL = "tcc2";
@@ -29,12 +29,11 @@ public class Comum {
     public final static String POSTGRES_ROOT = "root";
     public final static String POSTGRES_SENHA = "r00t";
     public final static String SSL = "?useSSL=false";
-    
+
     /**
      * Array com os nomes dos bancos de dados mais comuns.
      */
     public final static String SGBDs[] = {"", "Mysql", "Postgres"};
-
 
     /**
      * Retorna o nome do arquivo sem a extensão.
@@ -42,33 +41,38 @@ public class Comum {
     public static String cortaExtensao(String file) {
         return file.substring(0, file.lastIndexOf('.'));
     }
-    
+
     /**
-     * Retorna uma string do início até encontrar o último caracter passado por parâmetro.
+     * Retorna uma string do início até encontrar o último caracter passado por
+     * parâmetro.
+     *
      * @param s String a ser manipulada.
      * @param c Caracter que delimita o fim do corte.
      * @return String cortada.
      */
-    public static String cortaAte(String s, char c){
+    public static String cortaAte(String s, char c) {
         return s.substring(0, s.lastIndexOf(c) + 1);
     }
-    
+
     /**
-     * Retorna uma string que inicia depois do último caracater passado por parâmetro até o fim da string passada.
+     * Retorna uma string que inicia depois do último caracater passado por
+     * parâmetro até o fim da string passada.
+     *
      * @param s Strign a ser manipulada.
      * @param c Caracater que delimita o início do corte.
      * @return String cortada.
      */
-    public static String cortaDepoisDe(String s, char c){
+    public static String cortaDepoisDe(String s, char c) {
         return s.substring(s.lastIndexOf(c) + 1, s.length());
     }
-    
-    public static String prefixoOD(){
+
+    public static String prefixoOD() {
         return cortaExtensao(SidaUI.nomeDaOD);
     }
 
     public static File chooseFile() throws FileNotFoundException {
-        File f = new File("OD");
+//        File f = new File("OD");
+        File f = null;
         JFileChooser file = new JFileChooser();
         file.setFileSelectionMode(JFileChooser.FILES_ONLY);
         int i = file.showOpenDialog(null);
@@ -79,8 +83,6 @@ public class Comum {
         return f;
     }
 
-    
-     
     public static void changeIcon(JTree tree) {
         tree.setCellRenderer(new DefaultTreeCellRenderer() {
             private final Icon setaIcon = new ImageIcon(getClass().getResource("/lar/resources/img/seta_direita.png"));
@@ -91,22 +93,26 @@ public class Comum {
                     boolean focused) {
                 Component c = super.getTreeCellRendererComponent(tree, value, selected,
                         expanded, isLeaf, row, focused);
-                if(isLeaf == true){
+                if (isLeaf == true) {
                     setIcon(setaIcon);
                 }
                 return c;
             }
         });
     }
-    
+
     // MESSAGES
     public final static String CONNECTION_FAILED = "Wrong connection!";
-    
+
     public static void exibeMenssagemDeErro() {
         JOptionPane.showMessageDialog(null, "Sorry, you can not send empty field!", "Error validation!!", JOptionPane.ERROR_MESSAGE);
     }
-    
-    public static String printTab(String s){
+
+    public static String printTab(String s) {
         return "\t[***]" + s;
+    }
+
+    public static void print(String local, String message, String value) {
+        System.out.println("[*** " + local + "] " + message + " " + value + "\n");
     }
 }

@@ -16,7 +16,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import lar.entidade.Assertion;
-import lar.util.Comum;
+import lar.util.global;
 
 /**
  *
@@ -30,7 +30,7 @@ public class FrmGenerateR2rmlByAssertions extends javax.swing.JFrame {
     public FrmGenerateR2rmlByAssertions() {
         initComponents();
         this.fillTreeWithAssertions(FrmPrincipal.assertionsList);
-        Comum.changeIcon(this.treeAssertions);
+        global.changeIcon(this.treeAssertions);
 //        mudaIcone(this.treeAssertions);
     }
 

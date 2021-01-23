@@ -12,7 +12,7 @@ import lar.negocio.TemplatesR2RML;
 import lar.negocio.Transforma;
 import static lar.telas.FrmGerarDumpPorArquivoR2RML.nomeArquivoTtl;
 import static lar.telas.SidaUI.colunasParaSQL;
-import lar.util.Comum;
+import lar.util.global;
 
 /**
  *
@@ -60,19 +60,19 @@ public class FrmDumpByR2rml extends javax.swing.JFrame {
             
             
             if(alvo[1].contains("Classes")){
-                System.out.println(Comum.printTab("Gerando R2RML: dentro de if Classes"));
+                System.out.println(global.printTab("Gerando R2RML: dentro de if Classes"));
                 
                 String pk = origem[2].substring(0, origem[2].lastIndexOf(" "));
                 colunas += pk;
                 nomeDaTabelaAtual = origem[1];
                 this.txtAreaR2RML.append(TemplatesR2RML.mapeaTabelaLogica(origem[1], colunasParaSQL));
-                this.txtAreaR2RML.append(TemplatesR2RML.mapeaSujeito(Comum.prefixoOD(), alvo2, pk));
+                this.txtAreaR2RML.append(TemplatesR2RML.mapeaSujeito(global.prefixoOD(), alvo2, pk));
             }
             else{
                 colunas += origem2;
             }
             if(alvo[1].contains("Datatype")){
-                this.txtAreaR2RML.append(TemplatesR2RML.mapeaPredicadoObjeto(Comum.prefixoOD(), alvo2, origem2));
+                this.txtAreaR2RML.append(TemplatesR2RML.mapeaPredicadoObjeto(global.prefixoOD(), alvo2, origem2));
             }
         }
     }

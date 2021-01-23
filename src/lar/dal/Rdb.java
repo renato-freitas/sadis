@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import lar.entidade.Database;
-import lar.util.Comum;
+import lar.util.global;
 
 /**
  * Relational Database
@@ -41,10 +41,10 @@ public class Rdb {
     public static List<String> getTables(Database db) {
         tables = new ArrayList<>();
         try {
-            if (db.getServer().equals(Comum.SGBDs[1])) {
+            if (db.getServer().equals(global.SGBDs[1])) {
                 dbmd = new ConnectionFactory(db).getMysqlDBConnection().getMetaData();
             }
-            if (db.getServer().equals(Comum.SGBDs[2])) {
+            if (db.getServer().equals(global.SGBDs[2])) {
                 Connection conn;
                 conn = new ConnectionFactory(db).getPostgresDBConnection();
                 dbmd = conn.getMetaData();
@@ -57,7 +57,7 @@ public class Rdb {
                 rs = stmt.executeQuery();
 
                 while (rs.next()) {
-                    System.out.println(Comum.printTab(rs.getString(1)));
+                    System.out.println(global.printTab(rs.getString(1)));
                     tables.add(rs.getString(1));
                 }
 
@@ -127,7 +127,7 @@ public class Rdb {
                 columns.add(rs.getString(4));
 
                 if (colName.trim().toLowerCase().equals(colName)) {
-                    System.out.println("\t"+Comum.printTab(colName));
+                    System.out.println("\t"+global.printTab(colName));
 //                    System.out.println("\t[*** Column](" + i + "): " + colName);//Ele poderá ser eliminada posteriomente.
 //				    	this.getTipoDaColuna(tableName, conn, i);
                 }

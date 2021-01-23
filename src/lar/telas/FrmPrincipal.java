@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lar.telas;
 
 import java.awt.Color;
@@ -23,7 +18,7 @@ import lar.dal.Rdb;
 import lar.entidade.Assertion;
 import lar.entidade.Database;
 import lar.jena.Ontology;
-import lar.util.Comum;
+import lar.util.global;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
@@ -35,8 +30,8 @@ import org.apache.jena.ontology.OntModel;
  */
 public class FrmPrincipal extends javax.swing.JFrame {
 
-    public static String ontologyName = "File Name";
     public static OntModel domainOntology;
+    public static String domainOntologyName = "File Name";
     public static String ontologyUrl = "";
     public static String columnsToSQL = "";
     public static List<Assertion> assertionsList;
@@ -62,6 +57,8 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        btnOpenManagerRdf = new javax.swing.JButton();
+        btnDiseases = new javax.swing.JButton();
         tabMapping = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -112,6 +109,20 @@ public class FrmPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnOpenManagerRdf.setText("RDFs");
+        btnOpenManagerRdf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpenManagerRdfActionPerformed(evt);
+            }
+        });
+
+        btnDiseases.setText("Diseases");
+        btnDiseases.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDiseasesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -119,7 +130,11 @@ public class FrmPrincipal extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton1)
-                .addGap(170, 170, 170)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnOpenManagerRdf)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnDiseases)
+                .addGap(8, 8, 8)
                 .addComponent(jLabel2)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -129,7 +144,9 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(btnOpenManagerRdf)
+                    .addComponent(btnDiseases))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -147,7 +164,8 @@ public class FrmPrincipal extends javax.swing.JFrame {
         });
         jScrollPane3.setViewportView(arvOntology);
 
-        btnOpenOntology.setText("Open Domain Ontolgy");
+        btnOpenOntology.setText("Select Domain Ontology");
+        btnOpenOntology.setName("btnSelectDomainOntology"); // NOI18N
         btnOpenOntology.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnOpenOntologyActionPerformed(evt);
@@ -191,14 +209,14 @@ public class FrmPrincipal extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnSaveAssertions, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblDatasetSchema)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(lblOntTargetVocabulary)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(btnOpenOntology, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -407,17 +425,17 @@ public class FrmPrincipal extends javax.swing.JFrame {
         String url = "";
         String prop = "";
         if (!datatype.contains("#")) {
-            url = Comum.cortaAte(datatype, '/');
-            prop = Comum.cortaDepoisDe(datatype, '/');
+            url = global.cortaAte(datatype, '/');
+            prop = global.cortaDepoisDe(datatype, '/');
 
         } else {
-            url = Comum.cortaAte(datatype, '#');
-            prop = Comum.cortaDepoisDe(datatype, '#');
+            url = global.cortaAte(datatype, '#');
+            prop = global.cortaDepoisDe(datatype, '#');
         }
         System.out.println("url do NameSpace => " + url);
 
         for (Map.Entry<String, String> map : Ontology.getOntologyPrefixies(od).entrySet()) {
-            System.out.println(Comum.printTab("Map<String, String>: " + map.getKey() + ":" + map.getValue()));
+            System.out.println(global.printTab("Map<String, String>: " + map.getKey() + ":" + map.getValue()));
             if (map.getValue() == null ? url == null : map.getValue().equals(url)) {
                 prefixo = map.getKey() + ":" + prop;
                 System.out.println("Dentro do if => retorno no método retornarPrefixoNs: " + prefixo);
@@ -448,12 +466,12 @@ public class FrmPrincipal extends javax.swing.JFrame {
             propriedades.add(po);
         }
         for (DatatypeProperty dado : Ontology.getDatatypes(ontologia)) {
-            System.out.println(Comum.printTab("Datatypes da ontologia " + dado.toString()));
+            System.out.println(global.printTab("Datatypes da ontologia " + dado.toString()));
             String d = dado.toString();
 
 //          usae map<String prefixo, String url> here.
             String pre = this.getNSPrefix(d, ontologia);
-            System.out.println(Comum.printTab("prefixo encontrado: " + pre));
+            System.out.println(global.printTab("prefixo encontrado: " + pre));
 
             DefaultMutableTreeNode dp = new DefaultMutableTreeNode(pre);
             dados.add(dp);
@@ -496,21 +514,22 @@ public class FrmPrincipal extends javax.swing.JFrame {
     /*EVENTOS*/
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        new SidaUI().setVisible(true);
+//        new SidaUI().setVisible(true);
+        new FrmSparql().setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnOpenOntologyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenOntologyActionPerformed
         File f;
         try {
-            f = Comum.chooseFile();
-            ontologyName = f.getName();
+            f = global.chooseFile();
+            domainOntologyName = f.getName();
 
-            OntModel od = Ontology.getOntology(f);
-            domainOntology = od; // Armazena a OD durante toda a aplicação.
+            domainOntology = Ontology.getOntology(f);
+//            global.print("frmPrincipal", "btnOpenOntology()", domainOntology.getNsPrefixURI(""));
 
-            ontologyUrl = od.getNsPrefixURI("");
-            this.txtOD.setText(ontologyName);
-            this.fillOntoTree(od, ontologyName);
+            ontologyUrl = domainOntology.getNsPrefixURI("");
+            this.txtOD.setText(domainOntologyName);
+            this.fillOntoTree(domainOntology, domainOntologyName);
         } catch (FileNotFoundException e) {
         }
     }//GEN-LAST:event_btnOpenOntologyActionPerformed
@@ -520,14 +539,13 @@ public class FrmPrincipal extends javax.swing.JFrame {
 //        FrmEscolherBancoDeDados frmBD = new FrmEscolherBancoDeDados();
         FrmChooseDatabase frmCdb = new FrmChooseDatabase();
         frmCdb.setVisible(true);
-        
+
 //        Database bd = new Database();
 //        bd.setServer(Comum.SGBDs[2]);
 //        bd.setName("Sadis");
 //        bd.setURL(Comum.POSTGRES_URL);
 //        bd.setUser("postgres");
 //        bd.setPassword("r00t");
-
 //        List<String> tb = Rdb.getTables(bd);
 //        Iterator it = tb.iterator();
 //        while(it.hasNext()){
@@ -535,9 +553,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
 //            System.out.println(Comum.printTab(out));
 //            Rdb.getColumnsOfTable(out);
 //        }
-        
-        
-        this.txtBD.setText(Comum.NOME_BD_MYSQL);
+        this.txtBD.setText(global.NOME_BD_MYSQL);
         this.arvDatabase.setModel(frmCdb.arvBaseDeDados);
         changeIcon(arvDatabase);
     }//GEN-LAST:event_btnOpenDBActionPerformed
@@ -571,6 +587,17 @@ public class FrmPrincipal extends javax.swing.JFrame {
         this.txtAssertions.setBackground(Color.GREEN);
     }//GEN-LAST:event_arvOntologyValueChanged
 
+    private void btnOpenManagerRdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenManagerRdfActionPerformed
+        // TODO add your handling code here:
+//        new FrmManagerRDF().setVisible(true);
+        new FrmSparql().setVisible(true);
+    }//GEN-LAST:event_btnOpenManagerRdfActionPerformed
+
+    private void btnDiseasesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDiseasesActionPerformed
+        // TODO add your handling code here:
+        new FrmFoundDiseasesBySymptoms().setVisible(true);
+    }//GEN-LAST:event_btnDiseasesActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -580,22 +607,22 @@ public class FrmPrincipal extends javax.swing.JFrame {
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(FrmPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(FrmPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(FrmPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(FrmPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
         //</editor-fold>
 
         /* Create and display the form */
@@ -612,7 +639,9 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton btnAbrirFrmAssertions;
     private javax.swing.JButton btnAddCompare;
     private javax.swing.JButton btnCloseNoSave;
+    private javax.swing.JButton btnDiseases;
     private javax.swing.JButton btnOpenDB;
+    private javax.swing.JButton btnOpenManagerRdf;
     private javax.swing.JButton btnOpenOntology;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSaveAssertions;

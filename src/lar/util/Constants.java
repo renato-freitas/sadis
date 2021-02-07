@@ -5,6 +5,8 @@
  */
 package lar.util;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Renato
@@ -25,23 +27,44 @@ public class Constants {
     public final static String SSL = "?useSSL=false";
 
     /**RESERVED WORDS TO QUERIES SPARQL*/
-    public static final String STR_SELECT = "SELECT";
-    public static final String STR_DISTINCT = "DISTINCT";
-    public static final String STR_WHERE = "WHERE";
+    public static final String STR_SELECT = "SELECT ";
+    public static final String STR_DISTINCT = "DISTINCT ";
+    public static final String STR_SELECT_DISTINCT = STR_SELECT + STR_DISTINCT;
+    public static final String STR_WHERE = "WHERE ";
     public static final String STR_LIMIT = "LIMIT";
     public static final String STR_SERVICE = "SERVICE";
     public static final String STR_FILTER = "FILTER";
+    public static final String STR_LANG = "LANG";
+    public static final String STR_ORDER_BY = "ORDER BY";
     
-    /**SPARQL PRORPERTIES*/
+    /**W3C VOCABULARY*/
     public static final String STR_RDFS_LABEL = "rdfs:label";
     public static final String STR_SCHEMA_DESCRIPTION = "schema:description";
     
+    // ABOUT WIKIDATA
+    public static final String STR_WIKIDATA_SERVICE_PT_EN = STR_SERVICE+" wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],pt,en\" . }";
     public static final String STR_WIKIDATA_SERVICE = STR_SERVICE+" wikibase:label { bd:serviceParam wikibase:language \"en\" . }";
     public static final String STR_WIKIDATA_SERVICE_PT = STR_SERVICE+" wikibase:label { bd:serviceParam wikibase:language \"pt\" . }";
+    // WIKIDATA ARRAY COLUMNS
+//    public static final int INT_Q = 0;
+//    public static final int INT_LABEL = 1;
+//    public static final int INT_DESCRIPTION = 2;
+    // WIKIDATA OBJECT PROPERTY CODE
+    public static final String STR_WDT_P31_INSTANCEOF = "wdt:P31";
+    public static final String STR_WDT_P279_SUBCLASSOF = "wdt:P279";
+    public static final String STR_WIKIDATA_MAIN_THEME = "wdt:P921";
+    public static final String STR_WDT_P780_SYMPTOMS = "wdt:P780";
+    // WIKIDATA ITEM CODE
+    public static final String STR_WD_Q169872_SYMPTOMNS = "wd:Q169872";
+    public static final String STR_WD_Q12136_DISEASE = "wd:Q12136";
+    public static final String[] STR_WIKIDATA_PREPRINT = {"wd:Q580922", "preprint", "Projeto de um artigo científico que não foi ainda publicado em um periódico científico com revisão por pares"};
+    public static final String[] STR_WIKIDATA_ARTIGO_CIENTIFICO = {"wd:Q13442814", "Artigo científico", "artigo em uma publicação académica, normalmente revisada por pares"};
+    
+    
     
     /** SPARQL PREFIXES*/
     public static final String DEFAULT_SPARQL_PREFIXES = "PREFIX  dbo:  <http://dbpedia.org/ontology/>\n"
-            + "PREFIX  :     <http://dbpedia.org/resource/>\n"
+            + "PREFIX  dbr:     <http://dbpedia.org/resource/>\n"
             + "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
             + "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>\n"
             + "PREFIX  apf:  <http://jena.hpl.hp.com/ARQ/property#>\n"
@@ -54,8 +77,10 @@ public class Constants {
             + "PREFIX wd: <http://www.wikidata.org/entity/>\n"
             + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n"
             + "PREFIX schema: <http://schema.org/>\n"
-            + "PREFIX bd: <http://www.bigdata.com/rdf#>\n";
+            + "PREFIX bd: <http://www.bigdata.com/rdf#> ";
     
     /**SPARQL ENDPOINTS*/
     public static final String STR_WIKIDATA_ENDPOINT = "https://query.wikidata.org/sparql";
+    public static final String STR_DBPEDIA_ENDPOINT = "http://dbpedia.org/sparql";
+    public static final String STR_DBPEDIA_PT_ENDPOINT = "http://pt.dbpedia.org/sparql";
 }

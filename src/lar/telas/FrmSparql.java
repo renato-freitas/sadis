@@ -8,6 +8,7 @@ import lar.jena.Ontology;
 import static lar.telas.FrmPrincipal.domainOntology;
 import static lar.telas.FrmPrincipal.domainOntologyName;
 import static lar.telas.FrmPrincipal.ontologyUrl;
+import lar.util.Constants;
 import lar.util.global;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
@@ -243,13 +244,17 @@ public class FrmSparql extends javax.swing.JFrame {
         }
     }
 
+    //os recursos do tipo doença podem ser obtidos por vário rdf:type, dentre eles os que mais uso: dbo:Disease e wikidata:Q12136
+    //Assim para melhorar a busca, usarei: ?disease a [dbo:Disease || wikidata:Q12136 ]
+    // VALUES { }
     private void getDiseasesFromDbPedia() {
         this.txaResultSparql.setText("");
 
-        String query = DEFAULT_SPARQL_PREFIXES
+        String query = Constants.DEFAULT_SPARQL_PREFIXES
                 + "SELECT DISTINCT ?disease ?props ?value\n"
                 + "WHERE{ \n"
-                + "   ?disease a dbo:Disease .\n"
+                + " VALUES ?tipos { dbo:Disease wd:Q12136 }"
+                + "   ?disease a ?tipos .\n"
                 + "}";
 
         try (QueryExecution qe = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query)) {

@@ -58,7 +58,6 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         btnOpenManagerRdf = new javax.swing.JButton();
-        btnDiseases = new javax.swing.JButton();
         tabMapping = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -93,6 +92,8 @@ public class FrmPrincipal extends javax.swing.JFrame {
         btnCloseNoSave = new javax.swing.JButton();
         btnSetLinkSpec = new javax.swing.JButton();
         btnSaveOtherFolder = new javax.swing.JButton();
+        btnBringPaper = new javax.swing.JButton();
+        btnDiseases = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -116,13 +117,6 @@ public class FrmPrincipal extends javax.swing.JFrame {
             }
         });
 
-        btnDiseases.setText("Diseases");
-        btnDiseases.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDiseasesActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -132,9 +126,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnOpenManagerRdf)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnDiseases)
-                .addGap(8, 8, 8)
+                .addGap(93, 93, 93)
                 .addComponent(jLabel2)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -145,8 +137,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jButton1)
-                    .addComponent(btnOpenManagerRdf)
-                    .addComponent(btnDiseases))
+                    .addComponent(btnOpenManagerRdf))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -249,7 +240,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnAbrirFrmAssertions)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
                     .addComponent(jScrollPane3))
                 .addGap(15, 15, 15)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -382,7 +373,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                         .addComponent(btnCloseNoSave)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnSaveOtherFolder)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
                         .addComponent(btnSetLinkSpec, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
@@ -390,22 +381,46 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         tabMapping.addTab("Link Specifications", jPanel3);
 
+        btnBringPaper.setText("Bring Papers");
+        btnBringPaper.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBringPaperActionPerformed(evt);
+            }
+        });
+
+        btnDiseases.setText("Inferir Doença");
+        btnDiseases.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDiseasesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tabMapping)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tabMapping, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnBringPaper)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDiseases)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(tabMapping)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnBringPaper)
+                    .addComponent(btnDiseases))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addComponent(tabMapping, javax.swing.GroupLayout.PREFERRED_SIZE, 553, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -595,8 +610,13 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
     private void btnDiseasesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDiseasesActionPerformed
         // TODO add your handling code here:
-        new FrmFoundDiseasesBySymptoms().setVisible(true);
+        new FrmFilterDiseasesBySymptoms().setVisible(true);
     }//GEN-LAST:event_btnDiseasesActionPerformed
+
+    private void btnBringPaperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBringPaperActionPerformed
+        // TODO add your handling code here:
+        new FrmFindPaperByTheme().setVisible(true);
+    }//GEN-LAST:event_btnBringPaperActionPerformed
 
     /**
      * @param args the command line arguments
@@ -638,6 +658,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JTree arvOntology;
     private javax.swing.JButton btnAbrirFrmAssertions;
     private javax.swing.JButton btnAddCompare;
+    private javax.swing.JButton btnBringPaper;
     private javax.swing.JButton btnCloseNoSave;
     private javax.swing.JButton btnDiseases;
     private javax.swing.JButton btnOpenDB;

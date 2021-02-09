@@ -2,6 +2,7 @@ package lar.telas;
 
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
 import lar.entidade.ResourceWeb;
 import lar.jena.QueriesSparql;
 
@@ -14,6 +15,7 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
 
     public FrmFilterDiseasesBySymptoms() {
         initComponents();
+        this.btnInferingDisease.setEnabled(false);
     }
 
     /**
@@ -40,6 +42,11 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         lstPossibleDiseases = new javax.swing.JList<>();
         jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        txaCommentDisease = new javax.swing.JTextArea();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -50,6 +57,7 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(153, 153, 255));
 
+        jLabel2.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(12, 10, 200));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Inferir Doenças");
@@ -58,17 +66,17 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(521, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(471, 471, 471)
                 .addComponent(jLabel2)
-                .addGap(313, 313, 313))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2)
-                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         lstSymtoms.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -89,8 +97,16 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
         txaComment.setColumns(20);
         txaComment.setLineWrap(true);
         txaComment.setRows(5);
+        txaComment.setWrapStyleWord(true);
+        txaComment.setAutoscrolls(false);
+        txaComment.setMargin(new java.awt.Insets(4, 4, 4, 4));
         jScrollPane2.setViewportView(txaComment);
 
+        lstSelectedSymptoms.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lstSelectedSymptomsMouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(lstSelectedSymptoms);
 
         jLabel3.setText("Sintomas selecionados");
@@ -104,9 +120,29 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
 
         jLabel4.setText("Comentário do Sintoma");
 
+        lstPossibleDiseases.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lstPossibleDiseasesMouseClicked(evt);
+            }
+        });
         jScrollPane4.setViewportView(lstPossibleDiseases);
 
         jLabel5.setText("Possíveis Doenças");
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 153, 204));
+        jLabel6.setText("(Dois cliques para remover)");
+
+        txaCommentDisease.setEditable(false);
+        txaCommentDisease.setColumns(20);
+        txaCommentDisease.setLineWrap(true);
+        txaCommentDisease.setRows(5);
+        txaCommentDisease.setMargin(new java.awt.Insets(4, 4, 4, 4));
+        jScrollPane5.setViewportView(txaCommentDisease);
+
+        jLabel7.setText("Comentário da Doença");
+
+        jLabel8.setText("Fonte de Dados: http://dbpedia.org, http://wikidata.org");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -116,52 +152,75 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addComponent(jLabel4))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
+                                .addGap(4, 4, 4)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel6))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnInferingDisease))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(3, 3, 3)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jScrollPane2)
+                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                                .addComponent(jLabel7)
+                                .addGap(294, 294, 294))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(4, 4, 4)
-                                        .addComponent(jLabel3)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnInferingDisease)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(jLabel5)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jScrollPane5))
+                                        .addContainerGap())))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(btnInferingDisease)
-                            .addComponent(jLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE)
+                            .addComponent(jScrollPane5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel6))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnInferingDisease)
+                                .addComponent(jLabel5)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
                             .addComponent(jScrollPane4)))
                     .addComponent(jScrollPane1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel8)
                 .addContainerGap())
         );
 
@@ -172,6 +231,8 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
         this.symptoms = QueriesSparql.getSymptomsFromDbpedia();
         this.lstSymtoms.setModel(this.symptoms);
         this.lstSelectedSymptoms.setModel(this.selectedSymptoms);
+        
+        
     }//GEN-LAST:event_formWindowOpened
 
     private void lstSymtomsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lstSymtomsKeyTyped
@@ -179,22 +240,49 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
         this.txaComment.setText(rw.getComment());
         selectedSymptoms.addElement(rw);
         System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
+        
+        this.btnInferingDisease.setEnabled(true);
     }//GEN-LAST:event_lstSymtomsKeyTyped
 
     private void lstSymtomsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstSymtomsMouseClicked
+        if (evt.getClickCount() == 1) {
+            ResourceWeb rw = (ResourceWeb) this.lstSymtoms.getSelectedValues()[0];
+            this.txaComment.setText(rw.getComment());
+            System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
+//            selectedSymptoms.addElement(rw);
+        }
         if (evt.getClickCount() == 2) {
             ResourceWeb rw = (ResourceWeb) this.lstSymtoms.getSelectedValues()[0];
             this.txaComment.setText(rw.getComment());
             System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
             selectedSymptoms.addElement(rw);
+            
+            this.btnInferingDisease.setEnabled(true);
         }
     }//GEN-LAST:event_lstSymtomsMouseClicked
 
     private void btnInferingDiseaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInferingDiseaseActionPerformed
-        this.possibleDiseases = QueriesSparql.getDiseasesBySymptomnsFromDbpedia();
+        ListModel<String> v = lstSelectedSymptoms.getModel();
+        this.possibleDiseases = QueriesSparql.getDiseasesBySymptomnsFromDbpedia(v);
         System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.jButton1ActionPerformed()" + this.possibleDiseases);
         this.lstPossibleDiseases.setModel(this.possibleDiseases);
     }//GEN-LAST:event_btnInferingDiseaseActionPerformed
+
+    private void lstSelectedSymptomsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstSelectedSymptomsMouseClicked
+        if (evt.getClickCount() == 2) {
+            ResourceWeb rw = (ResourceWeb) this.lstSelectedSymptoms.getSelectedValues()[0];
+            this.selectedSymptoms.removeElement(rw);
+        }
+    }//GEN-LAST:event_lstSelectedSymptomsMouseClicked
+
+    private void lstPossibleDiseasesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstPossibleDiseasesMouseClicked
+        if (evt.getClickCount() == 1) {
+            ResourceWeb rw = (ResourceWeb) this.lstPossibleDiseases.getSelectedValues()[0];
+            System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstPossibleDiseasesMouseClicked()" + rw);
+            System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstPossibleDiseasesMouseClicked()" + rw.getComment());
+            this.txaCommentDisease.setText(rw.getComment());
+        }
+    }//GEN-LAST:event_lstPossibleDiseasesMouseClicked
 
 //    private void setSymptomToSelectedSymtomnsList(DefaultListModel symptomns) {
 //        this.lstSelectedSymptoms.setModel(symptomns);
@@ -243,14 +331,19 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JList<String> lstPossibleDiseases;
     private javax.swing.JList<String> lstSelectedSymptoms;
     private javax.swing.JList<String> lstSymtoms;
     private javax.swing.JTextArea txaComment;
+    private javax.swing.JTextArea txaCommentDisease;
     // End of variables declaration//GEN-END:variables
 }

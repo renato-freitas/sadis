@@ -10,6 +10,7 @@ import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
 import lar.entidade.ResourceWeb;
 import lar.util.Constants;
 import org.apache.jena.query.QueryExecution;
@@ -26,7 +27,7 @@ import org.apache.jena.rdf.model.Resource;
  */
 public class QueriesSparql {
 
-//DBPEDIA-PT METHODS
+    //DBPEDIA METHODS
     public static DefaultListModel getSymptomsFromDbpedia() {
         String query = Constants.DEFAULT_SPARQL_PREFIXES
                 + " select distinct ?s ?sl ?c where { \n"
@@ -36,22 +37,25 @@ public class QueriesSparql {
                 + "   ?s rdfs:comment ?c\n"
                 + "   filter( lang(?sl) = \"pt\")\n"
                 + "   filter(lang(?c) = \"pt\")\n"
-                + "}\n" 
-                +"order by(?sl)";
+                + "}\n"
+                + "order by(?sl)";
 
         return getSparqlQueryResult(Constants.STR_DBPEDIA_ENDPOINT, query, "s", "sl", "c");
     }
 
-    public static DefaultListModel getDiseasesBySymptomnsFromDbpedia() {
+    public static DefaultListModel getDiseasesBySymptomnsFromDbpedia(ListModel<String> symptomns) {
         String query = Constants.DEFAULT_SPARQL_PREFIXES
-                + "select distinct ?d ?dl where {\n"
-                + "   values ?s { dbr:Arthralgia dbr:Fatige }\n"
+                + "select distinct ?d ?dl ?c where {\n"
+                + getValues("?s", symptomns)
                 + "   ?d dbo:symptom ?s .\n"
                 + "   ?d rdfs:label ?dl .\n"
+                + "   ?d rdfs:comment ?c .\n"
                 + "   filter(lang(?dl) = \"pt\")\n"
+                + "   filter(lang(?c) = \"pt\")\n"
                 + "}\n"
                 + "order by(?dl)";
-        return getSparqlQueryResult(Constants.STR_DBPEDIA_ENDPOINT, query, "d", "dl", "");
+        System.out.println("lar.jena.QueriesSparql.getDiseasesBySymptomnsFromDbpedia()" + query);
+        return getSparqlQueryResult(Constants.STR_DBPEDIA_ENDPOINT, query, "d", "dl", "c");
     }
 
     public static List<String> getSymptomsFromWikidata() {
@@ -160,9 +164,12 @@ public class QueriesSparql {
     }
 
     //MÉTODO AUXILIAR
-    private static String getNamePlusLanguage(String name, String lang) {
-        return "\"" + name + "\"@" + lang;
+    private static String replaceUriDbpediaToPrefix(String uri) {
+        return uri.replace("http://dbpedia.org/resource/", "dbr:");
     }
+//    private static String getNamePlusLanguage(String name, String lang) {
+//        return "\"" + name + "\"@" + lang;
+//    }
 
     // SPARQL AUXILIAR METHODS
     public static List<String> getResultFromSparqlQuery(String endpoint, String query, String resource, String labelOut) {
@@ -194,13 +201,16 @@ public class QueriesSparql {
                     QuerySolution qs = rs.next();
                     Resource s = qs.getResource(resource);
                     Literal label = qs.getLiteral(l);
-                    Literal comment = qs.getLiteral(cl);
-//                    System.out.println("QueriesSparql, getResultFromSparqlQuery(), Subject: " + label);
 
                     ResourceWeb rsc = new ResourceWeb();
                     rsc.setUri(s.toString());
                     rsc.setLabel(label.toString());
-                    rsc.setComment(comment.toString());
+
+                    if (cl != null) {
+                        rsc.setComment(qs.getLiteral(cl).toString());
+                    }
+//                    System.out.println("QueriesSparql, getResultFromSparqlQuery(), Subject: " + label);
+
                     result.addElement(rsc);
                 }
                 qe.close();
@@ -213,6 +223,19 @@ public class QueriesSparql {
 
     public static String getVariables(String variables) {
         return " " + variables + " ";
+    }
+
+    public static String getValues(String variable, ListModel<String> values) {
+        String _values = "VALUES " + variable + " { ";
+
+        for (int i = 0; i < values.getSize(); i++) {
+            Object o = values.getElementAt(i);
+            String uri = ((ResourceWeb) o).getUri();
+            System.out.println("lar.jena.QueriesSparql.getValues()" + uri);
+            _values += replaceUriDbpediaToPrefix(uri) + " ";
+        }
+        _values += "}\n";
+        return _values;
     }
 
     public static String getStatmentContinue(String s, String p, String o) {

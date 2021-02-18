@@ -1,12 +1,20 @@
 package lar.telas;
 
+import java.awt.Rectangle;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.JScrollPane;
 import javax.swing.ListModel;
+import javax.swing.text.Position;
 import lar.entidade.ResourceWeb;
 import lar.jena.QueriesSparql;
 
-/** @author Renato */
+/**
+ * @author Renato
+ */
 public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
 
     DefaultListModel symptoms;
@@ -16,6 +24,7 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
     public FrmFilterDiseasesBySymptoms() {
         initComponents();
         this.btnInferingDisease.setEnabled(false);
+        this.txtSymptomName.setEnabled(false);
     }
 
     /**
@@ -30,7 +39,7 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        lstSymtoms = new javax.swing.JList<>();
+        lstSymptoms = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         txaComment = new javax.swing.JTextArea();
@@ -47,8 +56,10 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
         txaCommentDisease = new javax.swing.JTextArea();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
+        txtSymptomName = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Sadis - Inferir Possíveis Doenças");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -79,17 +90,17 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        lstSymtoms.addMouseListener(new java.awt.event.MouseAdapter() {
+        lstSymptoms.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lstSymtomsMouseClicked(evt);
+                lstSymptomsMouseClicked(evt);
             }
         });
-        lstSymtoms.addKeyListener(new java.awt.event.KeyAdapter() {
+        lstSymptoms.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
-                lstSymtomsKeyTyped(evt);
+                lstSymptomsKeyTyped(evt);
             }
         });
-        jScrollPane1.setViewportView(lstSymtoms);
+        jScrollPane1.setViewportView(lstSymptoms);
 
         jLabel1.setText("Selecione os sintomas");
 
@@ -111,7 +122,7 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
 
         jLabel3.setText("Sintomas selecionados");
 
-        btnInferingDisease.setText("Inferir");
+        btnInferingDisease.setText("Buscar");
         btnInferingDisease.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnInferingDiseaseActionPerformed(evt);
@@ -144,6 +155,13 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
 
         jLabel8.setText("Fonte de Dados: http://dbpedia.org, http://wikidata.org");
 
+        txtSymptomName.setToolTipText("Digite o sintoma");
+        txtSymptomName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSymptomNameKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -155,7 +173,8 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtSymptomName, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(4, 4, 4)
@@ -218,7 +237,10 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
                             .addComponent(jScrollPane4)))
-                    .addComponent(jScrollPane1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtSymptomName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel8)
                 .addContainerGap())
@@ -229,37 +251,41 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         this.symptoms = QueriesSparql.getSymptomsFromDbpedia();
-        this.lstSymtoms.setModel(this.symptoms);
+        this.lstSymptoms.setModel(this.symptoms);
+       
         this.lstSelectedSymptoms.setModel(this.selectedSymptoms);
-        
-        
+
+//        int tam = ((DefaultListModel) this.lstSymptoms.getModel()).getSize();
+        if(((DefaultListModel) this.lstSymptoms.getModel()).getSize() > 0){
+            this.txtSymptomName.setEnabled(true);
+        }
     }//GEN-LAST:event_formWindowOpened
 
-    private void lstSymtomsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lstSymtomsKeyTyped
-        ResourceWeb rw = (ResourceWeb) this.lstSymtoms.getSelectedValues()[0];
+    private void lstSymptomsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lstSymptomsKeyTyped
+        ResourceWeb rw = (ResourceWeb) this.lstSymptoms.getSelectedValues()[0];
         this.txaComment.setText(rw.getComment());
         selectedSymptoms.addElement(rw);
         System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
-        
-        this.btnInferingDisease.setEnabled(true);
-    }//GEN-LAST:event_lstSymtomsKeyTyped
 
-    private void lstSymtomsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstSymtomsMouseClicked
+        this.btnInferingDisease.setEnabled(true);
+    }//GEN-LAST:event_lstSymptomsKeyTyped
+
+    private void lstSymptomsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstSymptomsMouseClicked
         if (evt.getClickCount() == 1) {
-            ResourceWeb rw = (ResourceWeb) this.lstSymtoms.getSelectedValues()[0];
+            ResourceWeb rw = (ResourceWeb) this.lstSymptoms.getSelectedValues()[0];
             this.txaComment.setText(rw.getComment());
             System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
 //            selectedSymptoms.addElement(rw);
         }
         if (evt.getClickCount() == 2) {
-            ResourceWeb rw = (ResourceWeb) this.lstSymtoms.getSelectedValues()[0];
+            ResourceWeb rw = (ResourceWeb) this.lstSymptoms.getSelectedValues()[0];
             this.txaComment.setText(rw.getComment());
             System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
             selectedSymptoms.addElement(rw);
-            
+
             this.btnInferingDisease.setEnabled(true);
         }
-    }//GEN-LAST:event_lstSymtomsMouseClicked
+    }//GEN-LAST:event_lstSymptomsMouseClicked
 
     private void btnInferingDiseaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInferingDiseaseActionPerformed
         ListModel<String> v = lstSelectedSymptoms.getModel();
@@ -284,10 +310,46 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_lstPossibleDiseasesMouseClicked
 
+    private void txtSymptomNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSymptomNameKeyReleased
+        System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.txtSymptomNameInputMethodTextChanged()" + this.txtSymptomName.getText());
+//        this.txaComment.setText(this.txtSymptomName.getText());
+        filterModel((DefaultListModel) this.lstSymptoms.getModel(), this.txtSymptomName.getText());
+    }//GEN-LAST:event_txtSymptomNameKeyReleased
+
+    // MÉTODOS AUL
+    public void filterModel(DefaultListModel<String> model, String filter) {
+        int fere = this.lstSymptoms.getNextMatch(filter, WIDTH, Position.Bias.Forward);
+//        System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.filterModel()" + fere);
+        this.lstSymptoms.setSelectedIndex(fere);
+        this.lstSymptoms.setAutoscrolls(true);
+        this.lstSymptoms.ensureIndexIsVisible(fere);
+    }
+    
+    /**Método para pegar uma cópia da lista*/
+    private static List getItemsOnModel(DefaultListModel<String> model) {
+      List<String> list = new ArrayList<>();
+      for (int i = 0; i < model.size(); i++) {
+          list.add(model.elementAt(i));
+      }
+      return list;
+  }
+
+//    public void filterModel(DefaultListModel<String> model, String filter) {
+//        for (String s : defaultValues) {
+//            if (!s.startsWith(filter)) {
+//                if (model.contains(s)) {
+//                    model.removeElement(s);
+//                }
+//            } else {
+//                if (!model.contains(s)) {
+//                    model.addElement(s);
+//                }
+//            }
+//        }
+//    }
 //    private void setSymptomToSelectedSymtomnsList(DefaultListModel symptomns) {
 //        this.lstSelectedSymptoms.setModel(symptomns);
 //    }
-
     /**
      * @param args the command line arguments
      */
@@ -305,13 +367,17 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmFilterDiseasesBySymptoms.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmFilterDiseasesBySymptoms.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmFilterDiseasesBySymptoms.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmFilterDiseasesBySymptoms.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmFilterDiseasesBySymptoms.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmFilterDiseasesBySymptoms.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmFilterDiseasesBySymptoms.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmFilterDiseasesBySymptoms.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -342,8 +408,9 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JList<String> lstPossibleDiseases;
     private javax.swing.JList<String> lstSelectedSymptoms;
-    private javax.swing.JList<String> lstSymtoms;
+    private javax.swing.JList<String> lstSymptoms;
     private javax.swing.JTextArea txaComment;
     private javax.swing.JTextArea txaCommentDisease;
+    private javax.swing.JTextField txtSymptomName;
     // End of variables declaration//GEN-END:variables
 }

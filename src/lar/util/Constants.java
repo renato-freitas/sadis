@@ -45,15 +45,21 @@ public class Constants {
     public static final String STR_WIKIDATA_SERVICE_PT_EN = STR_SERVICE+" wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],pt,en\" . }";
     public static final String STR_WIKIDATA_SERVICE = STR_SERVICE+" wikibase:label { bd:serviceParam wikibase:language \"en\" . }";
     public static final String STR_WIKIDATA_SERVICE_PT = STR_SERVICE+" wikibase:label { bd:serviceParam wikibase:language \"pt\" . }";
+    
     // WIKIDATA ARRAY COLUMNS
-//    public static final int INT_Q = 0;
-//    public static final int INT_LABEL = 1;
-//    public static final int INT_DESCRIPTION = 2;
+    public static final int INT_Q = 0;
+    public static final int INT_LABEL = 1;
+    public static final int INT_DESCRIPTION = 2;
+    
     // WIKIDATA OBJECT PROPERTY CODE
     public static final String STR_WDT_P31_INSTANCEOF = "wdt:P31";
     public static final String STR_WDT_P279_SUBCLASSOF = "wdt:P279";
     public static final String STR_WIKIDATA_MAIN_THEME = "wdt:P921";
     public static final String STR_WDT_P780_SYMPTOMS = "wdt:P780";
+    public static final String WDT_P2176_DRUG_USED_FOR_TREATMENT = "wdt:P2176";
+    public static final String WDT_P18_IMAGE = "wdt:P18";
+    
+    
     // WIKIDATA ITEM CODE
     public static final String STR_WD_Q169872_SYMPTOMNS = "wd:Q169872";
     public static final String STR_WD_Q12136_DISEASE = "wd:Q12136";
@@ -77,8 +83,10 @@ public class Constants {
             + "PREFIX wd: <http://www.wikidata.org/entity/>\n"
             + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n"
             + "PREFIX schema: <http://schema.org/>\n"
-            + "PREFIX bd: <http://www.bigdata.com/rdf#> ";
+            + "PREFIX bd: <http://www.bigdata.com/rdf#>\n"
+            + "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n";
     
+   
     /**SPARQL ENDPOINTS*/
     public static final String STR_WIKIDATA_ENDPOINT = "https://query.wikidata.org/sparql";
     public static final String STR_DBPEDIA_ENDPOINT = "http://dbpedia.org/sparql";

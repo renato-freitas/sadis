@@ -1,12 +1,12 @@
 package lar.telas;
 
-import java.awt.Rectangle;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Color;
+import java.awt.MediaTracker;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.swing.DefaultListModel;
-import javax.swing.JScrollPane;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.ListModel;
 import javax.swing.text.Position;
 import lar.entidade.ResourceWeb;
@@ -17,13 +17,15 @@ import lar.jena.QueriesSparql;
  */
 public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
 
-    DefaultListModel symptoms;
+    DefaultListModel dbpediaSymptoms = new DefaultListModel();
     DefaultListModel selectedSymptoms = new DefaultListModel();
     DefaultListModel possibleDiseases = new DefaultListModel();
+    ResourceWeb disease = new ResourceWeb();
 
     public FrmFilterDiseasesBySymptoms() {
         initComponents();
         this.btnInferingDisease.setEnabled(false);
+        this.btnConfirmDisease.setEnabled(false);
         this.txtSymptomName.setEnabled(false);
     }
 
@@ -57,6 +59,7 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         txtSymptomName = new javax.swing.JTextField();
+        btnConfirmDisease = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Sadis - Inferir Possíveis Doenças");
@@ -162,6 +165,13 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
             }
         });
 
+        btnConfirmDisease.setText("Confirmar Doença");
+        btnConfirmDisease.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfirmDiseaseActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -199,12 +209,11 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel5)
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jScrollPane5))
-                                        .addContainerGap())))))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnConfirmDisease))
+                                    .addComponent(jScrollPane4)
+                                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addContainerGap())))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel8)
                         .addGap(0, 0, Short.MAX_VALUE))))
@@ -232,7 +241,8 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
                                 .addComponent(jLabel6))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnInferingDisease)
-                                .addComponent(jLabel5)))
+                                .addComponent(jLabel5)
+                                .addComponent(btnConfirmDisease)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
@@ -250,47 +260,51 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        this.symptoms = QueriesSparql.getSymptomsFromDbpedia();
-        this.lstSymptoms.setModel(this.symptoms);
-       
-        this.lstSelectedSymptoms.setModel(this.selectedSymptoms);
+        dbpediaSymptoms = QueriesSparql.getSymptomsFromDbpedia();
+        lstSymptoms.setModel(dbpediaSymptoms);
 
-//        int tam = ((DefaultListModel) this.lstSymptoms.getModel()).getSize();
-        if(((DefaultListModel) this.lstSymptoms.getModel()).getSize() > 0){
-            this.txtSymptomName.setEnabled(true);
+        lstSelectedSymptoms.setModel(selectedSymptoms);
+
+        if (((DefaultListModel) lstSymptoms.getModel()).getSize() > 0) {
+            txtSymptomName.setEnabled(true);
         }
     }//GEN-LAST:event_formWindowOpened
 
-    private void lstSymptomsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lstSymptomsKeyTyped
-        ResourceWeb rw = (ResourceWeb) this.lstSymptoms.getSelectedValues()[0];
-        this.txaComment.setText(rw.getComment());
-        selectedSymptoms.addElement(rw);
-        System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
 
-        this.btnInferingDisease.setEnabled(true);
+    private void lstSymptomsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lstSymptomsKeyTyped
+        Object o = (Object) lstSymptoms.getSelectedValue();
+//        ResourceWeb rw = (ResourceWeb) this.lstSymptoms.getSelectedValues()[0];
+        ResourceWeb rw = (ResourceWeb) o;
+        txaComment.setText(rw.getComment());
+//        System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
+
+        selectedSymptoms.addElement(rw);
+
+        btnInferingDisease.setEnabled(true);
     }//GEN-LAST:event_lstSymptomsKeyTyped
 
     private void lstSymptomsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstSymptomsMouseClicked
+        Object o = (Object) lstSymptoms.getSelectedValue();
+        ResourceWeb rw = (ResourceWeb) o;
         if (evt.getClickCount() == 1) {
-            ResourceWeb rw = (ResourceWeb) this.lstSymptoms.getSelectedValues()[0];
+
             this.txaComment.setText(rw.getComment());
-            System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
-//            selectedSymptoms.addElement(rw);
+//            System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
         }
         if (evt.getClickCount() == 2) {
-            ResourceWeb rw = (ResourceWeb) this.lstSymptoms.getSelectedValues()[0];
+//            ResourceWeb rw = (ResourceWeb) lstSymptoms.getSelectedValues()[0];
             this.txaComment.setText(rw.getComment());
-            System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
+//            System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstSymtomsKeyTyped()" + rw);
             selectedSymptoms.addElement(rw);
 
-            this.btnInferingDisease.setEnabled(true);
+            btnInferingDisease.setEnabled(true);
         }
     }//GEN-LAST:event_lstSymptomsMouseClicked
 
     private void btnInferingDiseaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInferingDiseaseActionPerformed
         ListModel<String> v = lstSelectedSymptoms.getModel();
         this.possibleDiseases = QueriesSparql.getDiseasesBySymptomnsFromDbpedia(v);
-        System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.jButton1ActionPerformed()" + this.possibleDiseases);
+//        System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.jButton1ActionPerformed()" + this.possibleDiseases);
         this.lstPossibleDiseases.setModel(this.possibleDiseases);
     }//GEN-LAST:event_btnInferingDiseaseActionPerformed
 
@@ -304,52 +318,42 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
     private void lstPossibleDiseasesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstPossibleDiseasesMouseClicked
         if (evt.getClickCount() == 1) {
             ResourceWeb rw = (ResourceWeb) this.lstPossibleDiseases.getSelectedValues()[0];
-            System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstPossibleDiseasesMouseClicked()" + rw);
-            System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstPossibleDiseasesMouseClicked()" + rw.getComment());
-            this.txaCommentDisease.setText(rw.getComment());
+
+            if (rw != null) {
+
+//                System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.lstPossibleDiseasesMouseClicked()" + rw);
+                this.txaCommentDisease.setText(rw.getComment());
+
+                this.btnConfirmDisease.setEnabled(true);
+            }
         }
     }//GEN-LAST:event_lstPossibleDiseasesMouseClicked
 
     private void txtSymptomNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSymptomNameKeyReleased
-        System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.txtSymptomNameInputMethodTextChanged()" + this.txtSymptomName.getText());
-//        this.txaComment.setText(this.txtSymptomName.getText());
+//        System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.txtSymptomNameInputMethodTextChanged()" + this.txtSymptomName.getText());
         filterModel((DefaultListModel) this.lstSymptoms.getModel(), this.txtSymptomName.getText());
     }//GEN-LAST:event_txtSymptomNameKeyReleased
 
-    // MÉTODOS AUL
+    private void btnConfirmDiseaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmDiseaseActionPerformed
+
+        Object object = lstPossibleDiseases.getSelectedValue();
+        ResourceWeb dbpediaDisease = (ResourceWeb) object;
+        
+        ResourceWeb wikiDisease = QueriesSparql.teste(dbpediaDisease);
+
+        FrmDisease frmDisease = new FrmDisease();
+        frmDisease.setDisease(wikiDisease);
+        frmDisease.setVisible(true);
+    }//GEN-LAST:event_btnConfirmDiseaseActionPerformed
+
+    // MÉTODOS AUXILIARES
     public void filterModel(DefaultListModel<String> model, String filter) {
         int fere = this.lstSymptoms.getNextMatch(filter, WIDTH, Position.Bias.Forward);
-//        System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.filterModel()" + fere);
         this.lstSymptoms.setSelectedIndex(fere);
         this.lstSymptoms.setAutoscrolls(true);
         this.lstSymptoms.ensureIndexIsVisible(fere);
     }
-    
-    /**Método para pegar uma cópia da lista*/
-    private static List getItemsOnModel(DefaultListModel<String> model) {
-      List<String> list = new ArrayList<>();
-      for (int i = 0; i < model.size(); i++) {
-          list.add(model.elementAt(i));
-      }
-      return list;
-  }
 
-//    public void filterModel(DefaultListModel<String> model, String filter) {
-//        for (String s : defaultValues) {
-//            if (!s.startsWith(filter)) {
-//                if (model.contains(s)) {
-//                    model.removeElement(s);
-//                }
-//            } else {
-//                if (!model.contains(s)) {
-//                    model.addElement(s);
-//                }
-//            }
-//        }
-//    }
-//    private void setSymptomToSelectedSymtomnsList(DefaultListModel symptomns) {
-//        this.lstSelectedSymptoms.setModel(symptomns);
-//    }
     /**
      * @param args the command line arguments
      */
@@ -391,6 +395,7 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnConfirmDisease;
     private javax.swing.JButton btnInferingDisease;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

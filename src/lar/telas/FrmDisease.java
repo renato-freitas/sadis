@@ -71,6 +71,7 @@ public class FrmDisease extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         lstActiveIngredient = new javax.swing.JList<>();
         jLabel3 = new javax.swing.JLabel();
+        lbHasOrNoDrugs = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Sadis - Informações sobre a Doença");
@@ -81,28 +82,14 @@ public class FrmDisease extends javax.swing.JFrame {
         });
 
         jPanel1.setBackground(new java.awt.Color(153, 153, 255));
+        jPanel1.setLayout(new java.awt.BorderLayout());
 
         lbSelectedDisease.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         lbSelectedDisease.setForeground(new java.awt.Color(12, 10, 200));
         lbSelectedDisease.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lbSelectedDisease.setText("Detalhes da Doença");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(255, 255, 255)
-                .addComponent(lbSelectedDisease)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lbSelectedDisease, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        lbSelectedDisease.setAlignmentY(0.0F);
+        jPanel1.add(lbSelectedDisease, java.awt.BorderLayout.CENTER);
 
         jLabel8.setText("Fonte de Dados: http://dbpedia.org, http://wikidata.org");
 
@@ -117,7 +104,7 @@ public class FrmDisease extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(lstPossibleDrugs);
 
-        jLabel1.setText("Possíeveis Drogas Usadas no Tratamento");
+        jLabel1.setText("Possíveis Drogas Usadas no Tratamento");
 
         txaAboutDrug.setColumns(20);
         txaAboutDrug.setRows(5);
@@ -129,6 +116,10 @@ public class FrmDisease extends javax.swing.JFrame {
 
         jLabel3.setText("Ingrediente Ativo em");
 
+        lbHasOrNoDrugs.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
+        lbHasOrNoDrugs.setForeground(new java.awt.Color(0, 153, 204));
+        lbHasOrNoDrugs.setText("(Selecione uma droga)");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -136,45 +127,48 @@ public class FrmDisease extends javax.swing.JFrame {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(lbUrlImage)
+                    .addComponent(jLabel8)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(lbUrlImage)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel8))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbHasOrNoDrugs)
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbUrlImage)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3)
-                    .addComponent(jScrollPane2))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(lbHasOrNoDrugs)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lbUrlImage)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel8)
                 .addContainerGap())
         );
@@ -188,11 +182,14 @@ public class FrmDisease extends javax.swing.JFrame {
         this.lbSelectedDisease.setText(this.disease.getLabel());
         this.lbUrlImage.setText(this.lbUrlImage.getText() + disease.getImage());
 
-        this.lstPossibleDrugs.setModel(disease.getDrugs());
+        if (disease.getDrugs().size() > 0) {
+            this.lstPossibleDrugs.setModel(disease.getDrugs());
+        } else {
+            lbHasOrNoDrugs.setText("(Nada encontrado!)");
+        }
 
-        if (!disease.getImage().isEmpty()) {
-
-            try {
+//        if (!disease.getImage().isEmpty()) {
+//            try {
 //                URL urlImg = new URL(disease.getImage());
 //                BufferedImage image = ImageIO.read(urlImg);
 //                while (image.getImageLoadStatus() == MediaTracker.LOADING);
@@ -202,23 +199,22 @@ public class FrmDisease extends javax.swing.JFrame {
 //                this.lbDiseaseImage.setIcon((Icon) fileImage);
 //                peImage.setPage(disease.getImage());
 //                peImage.setPage("https://www.wikidata.org/wiki/Q183130#/media/File:Gastritis_erosiva.2278.jpg");
-                peImage.setPage(disease.getImage());
-
-            } catch (MalformedURLException ex) {
-                Logger.getLogger(FrmDisease.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(FrmDisease.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            System.out.println("lar.telas.FrmDisease.formWindowOpened(), NÃO VEIO IMAGE");
-        }
+//                peImage.setPage(disease.getImage());
+//            } catch (MalformedURLException ex) {
+//                Logger.getLogger(FrmDisease.class.getName()).log(Level.SEVERE, null, ex);
+//            } catch (IOException ex) {
+//                Logger.getLogger(FrmDisease.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        } else {
+//            System.out.println("lar.telas.FrmDisease.formWindowOpened(), NÃO VEIO IMAGE");
+//        }
     }//GEN-LAST:event_formWindowOpened
 
     private void lstPossibleDrugsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstPossibleDrugsMouseClicked
-        Object o = (Object)lstPossibleDrugs.getSelectedValue();
-        ResourceWeb selectedDrug = (ResourceWeb)o;
+        Object o = (Object) lstPossibleDrugs.getSelectedValue();
+        ResourceWeb selectedDrug = (ResourceWeb) o;
         ResourceWeb rsw = QueriesSparql.getDescriptonAndAlsoKnowAsFromWikiDataByDrug(selectedDrug);
-        
+
         txaAboutDrug.setText(rsw.getComment());
         lstActiveIngredient.setModel(rsw.getActiveIngredientIn());
     }//GEN-LAST:event_lstPossibleDrugsMouseClicked
@@ -268,6 +264,7 @@ public class FrmDisease extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JLabel lbHasOrNoDrugs;
     private javax.swing.JLabel lbSelectedDisease;
     private javax.swing.JLabel lbUrlImage;
     private javax.swing.JList<String> lstActiveIngredient;

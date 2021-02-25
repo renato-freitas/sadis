@@ -302,9 +302,9 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
     }//GEN-LAST:event_lstSymptomsMouseClicked
 
     private void btnInferingDiseaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInferingDiseaseActionPerformed
+        txaCommentDisease.setText("");
         ListModel<String> v = lstSelectedSymptoms.getModel();
         this.possibleDiseases = QueriesSparql.getDiseasesBySymptomnsFromDbpedia(v);
-//        System.out.println("lar.telas.FrmFilterDiseasesBySymptoms.jButton1ActionPerformed()" + this.possibleDiseases);
         this.lstPossibleDiseases.setModel(this.possibleDiseases);
     }//GEN-LAST:event_btnInferingDiseaseActionPerformed
 
@@ -339,7 +339,7 @@ public class FrmFilterDiseasesBySymptoms extends javax.swing.JFrame {
         Object object = lstPossibleDiseases.getSelectedValue();
         ResourceWeb dbpediaDisease = (ResourceWeb) object;
         
-        ResourceWeb wikiDisease = QueriesSparql.teste(dbpediaDisease);
+        ResourceWeb wikiDisease = QueriesSparql.getWikidataDiseaseFromDbpediaByDbpediaDisease(dbpediaDisease);
 
         FrmDisease frmDisease = new FrmDisease();
         frmDisease.setDisease(wikiDisease);

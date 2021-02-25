@@ -118,7 +118,7 @@ public class FrmFindPaperByTheme extends javax.swing.JFrame {
 
     private void txtThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtThemeActionPerformed
         // TODO add your handling code here:
-        themes = QueriesSparql.getPaperThemeFromWikidata(this.txtTheme.getText());
+//        themes = QueriesSparql.getPaperThemeFromWikidata(this.txtTheme.getText());
 //        themes = QueriesSparql.getSymptomsFromWikidata();
         String[] stockArr = new String[themes.size()];
         stockArr = themes.toArray(stockArr);
@@ -126,7 +126,7 @@ public class FrmFindPaperByTheme extends javax.swing.JFrame {
     }//GEN-LAST:event_txtThemeActionPerformed
 
     private void btnGetThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGetThemeActionPerformed
-        themes = QueriesSparql.getPaperThemeFromWikidata(this.txtTheme.getText());
+//        themes = QueriesSparql.getPaperThemeFromWikidata(this.txtTheme.getText());
         String[] stockArr = new String[themes.size()];
         stockArr = themes.toArray(stockArr);
         this.lstThemes.setListData(stockArr);

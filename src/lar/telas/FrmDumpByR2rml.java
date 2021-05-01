@@ -11,8 +11,7 @@ import lar.entidade.Assertion;
 import lar.negocio.TemplatesR2RML;
 import lar.negocio.Transforma;
 import static lar.telas.FrmGerarDumpPorArquivoR2RML.nomeArquivoTtl;
-import static lar.telas.SidaUI.colunasParaSQL;
-import lar.util.global;
+import lar.util.Functions;
 
 /**
  *
@@ -27,57 +26,64 @@ public class FrmDumpByR2rml extends javax.swing.JFrame {
         initComponents();
         this.generateR2rmlFileCustom();
     }
-    
-    private void generateR2rmlFileCustom(){
-        this.txtAreaR2RML.append(TemplatesR2RML.prefixosPadrao());
+
+    private void generateR2rmlFileCustom() {
+        this.txtAreaR2RML.append(TemplatesR2RML.getPrefixies());
         generateClassMapping();
     }
-    
-    /** Gera o mapeamento de classe
-     */
-    private void generateClassMapping(){
-        String nomeDaTabelaAtual = "";
-        String colunas = "";
-        
-        for(Assertion assercao : SidaUI.listaDosAsserts){
-            String[] coluna = assercao.getOrigem().split(", ");
 
-            if(coluna[2].contains("pk")){
-                colunasParaSQL += coluna[2].substring(0, coluna[2].lastIndexOf(" ")) + ", ";
-            }else{
-                colunasParaSQL += coluna[2].substring(0, coluna[2].lastIndexOf("]")) + ", "; //nome da coluna
+    /**
+     * Gera o mapeamento de classe
+     */
+    private void generateClassMapping() {
+        String currentTable = "";
+        String columns = "";
+        final int VALUE = 2, TYPE = 1, TABLE = 1;
+
+        //Aqui, otbém todas as colunas para montar a query.
+        for (Assertion assertion : FrmPrincipal.assertionsList) {
+            String[] colummTarget = assertion.getAlvo().split(", ");
+            if (colummTarget[VALUE].contains("pk")) {
+                FrmPrincipal.columnsToSQL += colummTarget[VALUE].substring(0, colummTarget[VALUE].lastIndexOf(" ")) + ", ";
+            } else {
+                FrmPrincipal.columnsToSQL += colummTarget[VALUE].substring(0, colummTarget[VALUE].lastIndexOf("]")) + ", "; //get columm name
             }
+            currentTable = colummTarget[TABLE];
         }
+
+        this.txtAreaR2RML.append(TemplatesR2RML.mapeaTabelaLogica(currentTable, FrmPrincipal.columnsToSQL));
         
-        for(Assertion assercao : SidaUI.listaDosAsserts){
-            
-            String[] origem = assercao.getOrigem().split(", ");
-            String[] alvo = assercao.getAlvo().split(", ");
-            
-//            System.out.println(Comum.printTab(alvo[1]));
-            String origem2 = origem[2].substring(0, origem[2].lastIndexOf("]")); //nome da coluna
-            String alvo2 = alvo[2].substring(0, alvo[2].lastIndexOf("]")); //vocabulário da ontologia
-            
-            
-            if(alvo[1].contains("Classes")){
-                System.out.println(global.printTab("Gerando R2RML: dentro de if Classes"));
-                
-                String pk = origem[2].substring(0, origem[2].lastIndexOf(" "));
-                colunas += pk;
-                nomeDaTabelaAtual = origem[1];
-                this.txtAreaR2RML.append(TemplatesR2RML.mapeaTabelaLogica(origem[1], colunasParaSQL));
-                this.txtAreaR2RML.append(TemplatesR2RML.mapeaSujeito(global.prefixoOD(), alvo2, pk));
+        for (Assertion assertion : FrmPrincipal.assertionsList) {
+
+            String[] vocabulary = assertion.getOrigem().split(", ");
+            String[] alvo = assertion.getAlvo().split(", ");
+
+            String alvo2 = alvo[VALUE].substring(0, alvo[VALUE].lastIndexOf("]")); //nome da coluna
+            String origem2 = vocabulary[VALUE].substring(0, vocabulary[VALUE].lastIndexOf("]")); //vocabulário da ontologia
+
+//            if(alvo[1].contains("Classes")){
+            if (vocabulary[TYPE].contains("Classes")) {
+                Functions.printTab("Gerando R2RML: dentro de if Classes");
+                Functions.printTab("vacabulario > " + vocabulary[2]);
+
+                String pk = "";
+                if (vocabulary[2].contains("pk")) {
+                    pk = vocabulary[2].substring(0, vocabulary[2].lastIndexOf(" "));;
+                    columns += pk;
+                }
+                    
+
+                // SE NÃO TIVE PK, TEM QUE SELECIONAR UMA COLUNA PARA SER
+                this.txtAreaR2RML.append(TemplatesR2RML.mapeaSujeito(Functions.prefixoOD(), currentTable, pk));
+            } else {
+                columns += origem2;
             }
-            else{
-                colunas += origem2;
-            }
-            if(alvo[1].contains("Datatype")){
-                this.txtAreaR2RML.append(TemplatesR2RML.mapeaPredicadoObjeto(global.prefixoOD(), alvo2, origem2));
+            if (alvo[1].contains("Datatype")) {
+                this.txtAreaR2RML.append(TemplatesR2RML.mapeaPredicadoObjeto(Functions.prefixoOD(), alvo2, origem2));
             }
         }
     }
-    
-    
+
     public void salvaArquivo() {
         JFileChooser caixa_dialogo = new JFileChooser();
         int retorno = caixa_dialogo.showSaveDialog(this.txtAreaR2RML);
@@ -92,13 +98,13 @@ public class FrmDumpByR2rml extends javax.swing.JFrame {
             }
         }
     }
-    
-    /** Salva o arquivo ttl gerado na pasta temporária /tmp
+
+    /**
+     * Salva o arquivo ttl gerado na pasta temporária /tmp
      */
-    public void salvaArquivoTemp(){
+    public void salvaArquivoTemp() {
         nomeArquivoTtl = JOptionPane.showInputDialog(null, "Type a file ttl name", "*.ttl");
-        
-                        
+
         File file = null;
         FileWriter out = null;
         try {
@@ -112,17 +118,7 @@ public class FrmDumpByR2rml extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -211,8 +207,8 @@ public class FrmDumpByR2rml extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        this.txtAreaR2RML = null;
-        this.dispose();   
+        this.txtAreaR2RML.setText("");
+        this.dispose();
 // TODO add your handling code here:
     }//GEN-LAST:event_btnCancelActionPerformed
 
@@ -222,8 +218,8 @@ public class FrmDumpByR2rml extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-       salvaArquivoTemp();
-       this.btnDump.setEnabled(true);
+        salvaArquivoTemp();
+        this.btnDump.setEnabled(true);
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnDumpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDumpActionPerformed

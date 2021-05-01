@@ -5,22 +5,6 @@
  */
 package lar.telas;
 
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.DefaultListModel;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import lar.entidade.ResourceWeb;
 import lar.jena.QueriesSparql;
 
@@ -32,9 +16,6 @@ public class FrmDisease extends javax.swing.JFrame {
 
     private ResourceWeb disease;
 
-    /**
-     * @return the disease
-     */
     public ResourceWeb getDisease() {
         return disease;
     }

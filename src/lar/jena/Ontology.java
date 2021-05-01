@@ -16,15 +16,17 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
-
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.apache.jena.rdfconnection.RDFConnectionFactory;
 
 /**
  * @author Renato Freitas
  */
 public class Ontology {
-    
+
     /**
      * Obtém a Ontologia de Domínio.
+     *
      * @return OntModel - Ontologia de Domínio.
      * @param file Arquivo da Ontologia de Domínio.
      */
@@ -48,9 +50,9 @@ public class Ontology {
         return model;
     }
 
-   
     /**
      * Retorna uma lista OntClass com todas as classes da ontologia.
+     *
      * @param od - Ontologia de Domínio
      * @return Lista de OntClass
      */
@@ -58,16 +60,18 @@ public class Ontology {
         List<OntClass> classes = new ArrayList<>();
         Iterator iter;
         iter = od.listClasses();
-        while(iter.hasNext()){
-            OntClass oc = (OntClass)  iter.next();
-            System.out.println("[*** Classes da OD] "+oc);
+        while (iter.hasNext()) {
+            OntClass oc = (OntClass) iter.next();
+            System.out.println("[*** Classes da OD] " + oc);
             classes.add(oc);
         }
         return classes;
     }
 
     /**
-     * Retorna uma lista de String com todas as propriedades objetos da ontologia.
+     * Retorna uma lista de String com todas as propriedades objetos da
+     * ontologia.
+     *
      * @param od - Ontologia de Domínio
      * @return Lista de Propriedades em string
      */
@@ -75,19 +79,18 @@ public class Ontology {
         List<String> propriedades = new ArrayList<>();
         Iterator iter;
         iter = od.listObjectProperties();
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             ObjectProperty op = (ObjectProperty) iter.next();
-            System.out.println("[*** ObjectProperties] " +op.getLocalName());
+            System.out.println("[*** ObjectProperties] " + op.getLocalName());
             propriedades.add(op.getLocalName());
         }
         return propriedades;
     }
 
-    
-    
-    
     /**
-     * Retorna uma lista DatatypeProperty com todos os tipos de dados da ontologia.
+     * Retorna uma lista DatatypeProperty com todos os tipos de dados da
+     * ontologia.
+     *
      * @param od - Ontologia de Domínio.
      * @return Lista de DatatypeProperty.
      */
@@ -95,23 +98,25 @@ public class Ontology {
         List<DatatypeProperty> data = new ArrayList<>();
         Iterator iter;
         iter = od.listDatatypeProperties();
-        while(iter.hasNext()){
-            DatatypeProperty dtp = (DatatypeProperty)  iter.next();
+        while (iter.hasNext()) {
+            DatatypeProperty dtp = (DatatypeProperty) iter.next();
 //            System.out.println("[***Data] "+dtp.getLocalName());
             data.add(dtp);
         }
         return data;
     }
-    
-    
+
     /**
      * Retorna um Map de prefixo e url dos namespace da Ontologia de Domínio.
+     *
      * @param od - Ontologia de Domínio
      * @return Map<prefixo, url> em string.
      */
-    public static Map<String, String> getOntologyPrefixies(OntModel od){
-        Map<String, String> prefixos =  od.getNsPrefixMap();
+    public static Map<String, String> getOntologyPrefixies(OntModel od) {
+        Map<String, String> prefixos = od.getNsPrefixMap();
         return prefixos;
     }
-    
+
+   
+
 }

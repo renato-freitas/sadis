@@ -9,7 +9,8 @@ import javax.swing.tree.DefaultTreeModel;
 import lar.dal.Rdb;
 import lar.entidade.Database;
 import static lar.telas.FrmEscolherBancoDeDados.bdSession;
-import lar.util.global;
+import lar.util.Constants;
+import lar.util.Functions;
 
 /**
  *
@@ -19,44 +20,51 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
 
     private boolean statusFieldsRequireds = true;
     public DefaultListModel listModel;
-    public DefaultTreeModel arvBaseDeDados;
+    public DefaultTreeModel databaseTree;
     public static Database bdSession;
-    public static String nomeBD;
+    public static String dbName;
 
     public DefaultListModel getListModel() {
         return listModel;
     }
-    public DefaultTreeModel getArvBaseDeDados(){
-        return arvBaseDeDados;
+
+    public DefaultTreeModel getDatabaseTree() {
+        return databaseTree;
     }
-    
+
     public FrmChooseDatabase() {
         initComponents();
-        this.loadCombobox();
-        
-        listModel = new DefaultListModel();
-        arvBaseDeDados = new DefaultTreeModel(new DefaultMutableTreeNode());
-    }
-    
-    
-    /**Retorna a base de dados com as crendeciais de acesso
-     * @return BancoDeDados.
-     */
-    public Database getEntidade() {
-        Database bd = new Database();
+        this.loadDbServersCombobox();
 
-        if (this.cbDbServer.getSelectedItem() != "") {
-            String itemCombo = this.cbDbServer.getSelectedItem().toString();
-            if (!"".equals(itemCombo)) {
-                if (global.SGBDs[1].equals(itemCombo)) {
-                    bd.setServer(global.SGBDs[1]);
-                    bd.setURL(global.MYSQL_URL);
-                    this.txtURL.setText(global.MYSQL_URL);
+        listModel = new DefaultListModel();
+        databaseTree = new DefaultTreeModel(new DefaultMutableTreeNode());
+        
+        this.txtURL.setText("jdbc:postgresql://localhost:5432/");
+        this.txtDatasetName.setText("riscomi");
+        this.txtUserName.setText("postgres");
+        this.txtPassword.setText("rjm818321");
+        
+    }
+
+    /**
+     * Retorna a base de dados com as crendeciais de acesso
+     *
+     * @return Database.
+     */
+    public Database getDbCredentials() {
+        Database bd = new Database();
+        if (this.cbDbServers.getSelectedItem() != "") {
+            String itemSelectedOfCombo = this.cbDbServers.getSelectedItem().toString();
+            if (!"".equals(itemSelectedOfCombo)) {
+                if (Constants.DB_MYSQL.equals(itemSelectedOfCombo)) {
+                    bd.setServer(Constants.DB_MYSQL);
+                    bd.setURL(Constants.MYSQL_URL);
+                    this.txtURL.setText(Constants.MYSQL_URL);
                 }
-                if (global.SGBDs[2].equals(itemCombo)) {
-                    bd.setServer(global.SGBDs[2]);
-                    bd.setURL(global.POSTGRES_URL);
-                    this.txtURL.setText(global.POSTGRES_URL);
+                if (Constants.DB_POSTGRES.equals(itemSelectedOfCombo)) {
+                    bd.setServer(Constants.DB_POSTGRES);
+                    bd.setURL(Constants.POSTGRES_URL);
+                    this.txtURL.setText(Constants.POSTGRES_URL);
                 }
             }
         } else {
@@ -69,7 +77,7 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
         }
         if (!"".equals(this.txtUserName.getText())) {
             bd.setUser(this.txtUserName.getText());
-        } else { 
+        } else {
             statusFieldsRequireds = false;
         }
         String pwd = new String(this.txtPassword.getPassword());
@@ -81,19 +89,14 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
         bdSession = bd;
         return bd;
     }
-    
-    
-    
-    
+
     /*Eventos*/
-    private void loadCombobox() {
-        for (String SGBD : global.SGBDs){
-            this.cbDbServer.addItem(SGBD); 
+    private void loadDbServersCombobox() {
+        for (String SGBD : Constants.SGBDs) {
+            this.cbDbServers.addItem(SGBD);
         }
     }
 
-    
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -105,7 +108,7 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        cbDbServer = new javax.swing.JComboBox<>();
+        cbDbServers = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         txtURL = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
@@ -124,9 +127,9 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
 
         jLabel1.setText("Database Server");
 
-        cbDbServer.addItemListener(new java.awt.event.ItemListener() {
+        cbDbServers.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbDbServerItemStateChanged(evt);
+                cbDbServersItemStateChanged(evt);
             }
         });
 
@@ -161,7 +164,7 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txtURL, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel1)
-                    .addComponent(cbDbServer, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cbDbServers, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3)
                     .addComponent(txtDatasetName)
@@ -184,7 +187,7 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbDbServer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbDbServers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -230,44 +233,50 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        Database bd = this.getEntidade();
+        Database bd = this.getDbCredentials();
 
         if (statusFieldsRequireds) {
-            List<String> tb = Rdb.getTables(bd);
-            
-            if (tb != null) {
-                Iterator it_tab = tb.iterator();
+            List<String> allTablesOfDatabase = Rdb.getTables(bd);
+
+            if (allTablesOfDatabase != null) {
+                Iterator iteratorOfTables = allTablesOfDatabase.iterator();
 
                 DefaultMutableTreeNode raiz = new DefaultMutableTreeNode(bd.getName());
 
-                while (it_tab.hasNext()) {
-                    String tableName = (String) it_tab.next();
-                    System.out.println("[*** Table]" + tableName);
+                while (iteratorOfTables.hasNext()) {
+                    String tableName = (String) iteratorOfTables.next();
+                    System.out.println("[*** Table] " + tableName);
 
                     Rdb.getPKOfTable(tableName);
                     Rdb.getColumnsOfTable(tableName);
                     DefaultMutableTreeNode tabela = new DefaultMutableTreeNode(tableName);
 
                     for (String col : Rdb.columns) {
-                        System.out.println("\t[*** Colunas]" + col);
+                        System.out.println("\t[*** Colunas] " + col);
 
-                        for (String pk : Rdb.pks) {
-
-                            if (pk.equals(col)) {
-                                System.out.println("\t\t[*** pk]: " + pk);
-                                listModel.addElement(tableName + ":" + col + " (pk)");
-                                DefaultMutableTreeNode coluna = new DefaultMutableTreeNode(col + " (pk)");
-                                tabela.add(coluna);
-                            } else {
-                                listModel.addElement(tableName + ":" + col);
-                                DefaultMutableTreeNode coluna = new DefaultMutableTreeNode(col);
-                                tabela.add(coluna);
+                        // Alguma tabelas podem não ter o primaryKey, logo deve-se verificar
+                        if (Rdb.pks.size() > 0) {
+                            for (String pk : Rdb.pks) {
+                                if (pk.equals(col)) {
+                                    System.out.println("\t\t[*** pk]: " + pk);
+                                    listModel.addElement(tableName + ":" + col + " (pk)");
+                                    DefaultMutableTreeNode coluna = new DefaultMutableTreeNode(col + " (pk)");
+                                    tabela.add(coluna);
+                                } else {
+                                    listModel.addElement(tableName + ":" + col);
+                                    DefaultMutableTreeNode coluna = new DefaultMutableTreeNode(col);
+                                    tabela.add(coluna);
+                                }
                             }
+                        } else {
+                            listModel.addElement(tableName + ":" + col);
+                            DefaultMutableTreeNode coluna = new DefaultMutableTreeNode(col);
+                            tabela.add(coluna);
                         }
                     }
                     raiz.add(tabela);
                 }
-                arvBaseDeDados.setRoot(raiz);
+                databaseTree.setRoot(raiz);
 
                 JOptionPane.showMessageDialog(null, "Successful Connection!");
                 this.dispose();
@@ -275,7 +284,7 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Was not possible find the dataset!");
             }
         } else {
-            global.exibeMenssagemDeErro();
+            Functions.exibeMenssagemDeErro();
             statusFieldsRequireds = true;
         }
     }//GEN-LAST:event_btnOkActionPerformed
@@ -284,18 +293,20 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnCloseActionPerformed
 
-    /**Add Database URL in txtURL*/
-    private void cbDbServerItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbDbServerItemStateChanged
-        if (this.cbDbServer.getSelectedItem() != "") {
-            String itemCombo = this.cbDbServer.getSelectedItem().toString();
-            if (global.SGBDs[1].equals(itemCombo)) {
-                this.txtURL.setText(global.MYSQL_URL);
+    /**
+     * Add Database URL in txtURL
+     */
+    private void cbDbServersItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbDbServersItemStateChanged
+        if (this.cbDbServers.getSelectedItem() != "") {
+            String itemCombo = this.cbDbServers.getSelectedItem().toString();
+            if (Constants.DB_MYSQL.equals(itemCombo)) {
+                this.txtURL.setText(Constants.MYSQL_URL);
             }
-            if (global.SGBDs[2].equals(itemCombo)) {
-                this.txtURL.setText(global.POSTGRES_URL);
+            if (Constants.DB_POSTGRES.equals(itemCombo)) {
+                this.txtURL.setText(Constants.POSTGRES_URL);
             }
-        } 
-    }//GEN-LAST:event_cbDbServerItemStateChanged
+        }
+    }//GEN-LAST:event_cbDbServersItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -335,7 +346,7 @@ public class FrmChooseDatabase extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnClose;
     private javax.swing.JButton btnOk;
-    private javax.swing.JComboBox<String> cbDbServer;
+    private javax.swing.JComboBox<String> cbDbServers;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

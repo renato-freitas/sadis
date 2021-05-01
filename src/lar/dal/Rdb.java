@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import lar.entidade.Database;
-import lar.util.global;
+import lar.util.Constants;
+import lar.util.Functions;
 
 /**
  * Relational Database
@@ -23,7 +24,7 @@ import lar.util.global;
  */
 public class Rdb {
 
-    private static DatabaseMetaData dbmd;
+    private static DatabaseMetaData metadataOfDatabase;
     public static List<String> tables;
     public static List<String> columns;
     public static List<String> pks;
@@ -31,6 +32,21 @@ public class Rdb {
     private static String schema = null;
     private static final String[] TYPE_OF_TABLES = {"TABLE", "VIEW", "ALIAS", "SYNONYM", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "SYSTEM TABLE"};
 
+    
+    private void setMetadataOfDatabase(Database db){
+        try {
+            if (db.getServer().equals(Constants.DB_MYSQL)) {
+                metadataOfDatabase = new ConnectionFactory(db).getMysqlDBConnection().getMetaData();
+            }
+            if (db.getServer().equals(Constants.DB_POSTGRES)) {
+                Connection conn;
+                conn = new ConnectionFactory(db).getPostgresDBConnection();
+                metadataOfDatabase = conn.getMetaData();
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
     /**
      * Obtém um lista com todas as tabelas do BD.
      *
@@ -41,23 +57,22 @@ public class Rdb {
     public static List<String> getTables(Database db) {
         tables = new ArrayList<>();
         try {
-            if (db.getServer().equals(global.SGBDs[1])) {
-                dbmd = new ConnectionFactory(db).getMysqlDBConnection().getMetaData();
+            if (db.getServer().equals(Constants.DB_MYSQL)) {
+                metadataOfDatabase = new ConnectionFactory(db).getMysqlDBConnection().getMetaData();
             }
-            if (db.getServer().equals(global.SGBDs[2])) {
+            if (db.getServer().equals(Constants.DB_POSTGRES)) {
                 Connection conn;
                 conn = new ConnectionFactory(db).getPostgresDBConnection();
-                dbmd = conn.getMetaData();
+                metadataOfDatabase = conn.getMetaData();
 
                 String t
                         = "SELECT tablename FROM pg_tables WHERE tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql\\_%'";
-//                System.out.println(t);
                 PreparedStatement stmt = conn.prepareStatement(t);
                 ResultSet rs;
                 rs = stmt.executeQuery();
 
                 while (rs.next()) {
-                    System.out.println(global.printTab(rs.getString(1)));
+                    Functions.printTab(rs.getString(1));
                     tables.add(rs.getString(1));
                 }
 
@@ -85,13 +100,9 @@ public class Rdb {
         try {
             while (table.hasNext()) {
                 String tableName = (String) table.next();
-                //just prin
-//                System.out.println("[***Table] " + tableName);
-
-                //get columns
-                ResultSet rs = dbmd.getColumns(catalog, schema, tableName, "%");
-//                ResultSetMetaData rsmd =  rs.getMetaData();
-                int i = 1;
+               
+                ResultSet rs = metadataOfDatabase.getColumns(catalog, schema, tableName, "%");
+//                int i = 1;
                 while (rs.next()) {
 //                    System.out.println(rsmd.getSchemaName(1));
 
@@ -101,7 +112,7 @@ public class Rdb {
 //                        System.out.println("\t[*** Column](" + i + "): " + colName);//Ele poderá ser eliminada posteriomente.
 //				    	this.getTipoDaColuna(tableName, conn, i);
                     }
-                    i++;
+//                    i++;
                 }
             }
         } catch (SQLException e) {
@@ -119,18 +130,16 @@ public class Rdb {
         columns = new ArrayList<>();
         try {
 
-            ResultSet rs = dbmd.getColumns(catalog, schema, nomeTabela, "%");
+            ResultSet rs = metadataOfDatabase.getColumns(catalog, schema, nomeTabela, "%");
             int i = 1;
             while (rs.next()) {
 
                 String colName = rs.getString(4);
                 columns.add(rs.getString(4));
 
-                if (colName.trim().toLowerCase().equals(colName)) {
-                    System.out.println("\t"+global.printTab(colName));
-//                    System.out.println("\t[*** Column](" + i + "): " + colName);//Ele poderá ser eliminada posteriomente.
-//				    	this.getTipoDaColuna(tableName, conn, i);
-                }
+//                if (colName.trim().toLowerCase().equals(colName)) {
+//                    System.out.println("\t"+Constant.printTab(colName));
+//                }
                 i++;
             }
         } catch (SQLException e) {
@@ -148,7 +157,7 @@ public class Rdb {
     public static void getPKOfTable(String nomeTabela) {
         pks = new ArrayList<>();
         try {
-            ResultSet rs = dbmd.getPrimaryKeys(catalog, schema, nomeTabela);
+            ResultSet rs = metadataOfDatabase.getPrimaryKeys(catalog, schema, nomeTabela);
 
             while (rs.next()) {
                 pks.add(rs.getString(4));

@@ -170,10 +170,4 @@ public class ResourceWeb {
     public void setActiveIngredientIn(DefaultListModel activeIngredientIn) {
         this.activeIngredientIn = activeIngredientIn;
     }
-    
-    
-    
-    
-    
-
 }

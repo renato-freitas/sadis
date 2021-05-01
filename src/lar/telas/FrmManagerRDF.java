@@ -19,7 +19,7 @@ import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.VCARD;
-import lar.util.global;
+import lar.util.Functions;
 
 /**
  *

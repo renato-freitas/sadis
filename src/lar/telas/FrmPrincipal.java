@@ -4,21 +4,22 @@ import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import lar.dal.Rdb;
 import lar.entidade.Assertion;
-import lar.entidade.Database;
+import lar.jena.LocalSparqlQueries;
 import lar.jena.Ontology;
-import lar.util.global;
+import lar.util.Functions;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
@@ -56,8 +57,6 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        btnOpenManagerRdf = new javax.swing.JButton();
         tabMapping = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -65,14 +64,12 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         arvOntology = new javax.swing.JTree();
         btnOpenOntology = new javax.swing.JButton();
-        txtOD = new javax.swing.JTextField();
-        btnOpenDB = new javax.swing.JButton();
-        txtBD = new javax.swing.JTextField();
+        btnChooseDB = new javax.swing.JButton();
         btnAbrirFrmAssertions = new javax.swing.JButton();
         lblDatasetSchema = new javax.swing.JLabel();
         lblOntTargetVocabulary = new javax.swing.JLabel();
         txtAssertions = new javax.swing.JTextField();
-        btnSaveAssertions = new javax.swing.JButton();
+        btnSaveAssertion = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtAreaLinkSpec = new javax.swing.JTextArea();
@@ -94,6 +91,10 @@ public class FrmPrincipal extends javax.swing.JFrame {
         btnSaveOtherFolder = new javax.swing.JButton();
         btnBringPaper = new javax.swing.JButton();
         btnDiseases = new javax.swing.JButton();
+        btnIntegrarSintomas = new javax.swing.JButton();
+        btnLocalRDF = new javax.swing.JButton();
+        btnOpenManagerRdf = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -103,42 +104,20 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel2.setText("SADIS - Semi Automatic Data Integration Suite");
 
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        btnOpenManagerRdf.setText("RDFs");
-        btnOpenManagerRdf.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOpenManagerRdfActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnOpenManagerRdf)
-                .addGap(93, 93, 93)
+                .addGap(239, 239, 239)
                 .addComponent(jLabel2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(244, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jButton1)
-                    .addComponent(btnOpenManagerRdf))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE)
+                .addComponent(jLabel2))
         );
 
         arvDatabase.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
@@ -155,7 +134,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         });
         jScrollPane3.setViewportView(arvOntology);
 
-        btnOpenOntology.setText("Select Domain Ontology");
+        btnOpenOntology.setText("Choose Domain Ontology");
         btnOpenOntology.setName("btnSelectDomainOntology"); // NOI18N
         btnOpenOntology.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -163,10 +142,10 @@ public class FrmPrincipal extends javax.swing.JFrame {
             }
         });
 
-        btnOpenDB.setText("Open Dataset");
-        btnOpenDB.addActionListener(new java.awt.event.ActionListener() {
+        btnChooseDB.setText("Choose Database");
+        btnChooseDB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOpenDBActionPerformed(evt);
+                btnChooseDBActionPerformed(evt);
             }
         });
 
@@ -181,10 +160,10 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         lblOntTargetVocabulary.setText("Ontology Target (Vocabulary)");
 
-        btnSaveAssertions.setText("Save Assertions");
-        btnSaveAssertions.addActionListener(new java.awt.event.ActionListener() {
+        btnSaveAssertion.setText("Save Assertions");
+        btnSaveAssertion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSaveAssertionsActionPerformed(evt);
+                btnSaveAssertionActionPerformed(evt);
             }
         });
 
@@ -196,58 +175,54 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(txtAssertions, javax.swing.GroupLayout.PREFERRED_SIZE, 809, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnSaveAssertions, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblDatasetSchema)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblOntTargetVocabulary))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                            .addComponent(lblOntTargetVocabulary)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(btnOpenOntology, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnOpenDB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtOD)
-                                .addComponent(txtBD))
-                            .addComponent(btnAbrirFrmAssertions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lblDatasetSchema)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnOpenOntology, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnChooseDB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnAbrirFrmAssertions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(txtAssertions, javax.swing.GroupLayout.PREFERRED_SIZE, 604, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnSaveAssertion, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(84, Short.MAX_VALUE))
         );
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jScrollPane2, jScrollPane3});
+
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnAbrirFrmAssertions, btnChooseDB, btnOpenOntology, btnSaveAssertion});
 
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblDatasetSchema)
-                    .addComponent(lblOntTargetVocabulary))
+                    .addComponent(lblOntTargetVocabulary)
+                    .addComponent(lblDatasetSchema))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(btnOpenOntology)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtOD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnOpenDB)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtBD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnAbrirFrmAssertions)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3))
-                .addGap(15, 15, 15)
+                        .addComponent(btnChooseDB)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnAbrirFrmAssertions))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtAssertions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSaveAssertions))
-                .addContainerGap())
+                    .addComponent(btnSaveAssertion))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnSaveAssertion, txtAssertions});
 
         tabMapping.addTab("Mapping", jPanel2);
 
@@ -329,8 +304,8 @@ public class FrmPrincipal extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cbDatasetSource, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(cbDatasetTarget, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -343,7 +318,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                     .addComponent(lblDatasetTarget)
                     .addComponent(cbEditLinkSpecFile, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addGap(200, 200, 200))
         );
 
         jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnCloseNoSave, btnSave, btnSaveOtherFolder, btnSetLinkSpec});
@@ -373,7 +348,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                         .addComponent(btnCloseNoSave)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnSaveOtherFolder)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnSetLinkSpec, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
@@ -395,6 +370,34 @@ public class FrmPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnIntegrarSintomas.setText("Integrar Sintomas");
+        btnIntegrarSintomas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIntegrarSintomasActionPerformed(evt);
+            }
+        });
+
+        btnLocalRDF.setText("Local RDF");
+        btnLocalRDF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLocalRDFActionPerformed(evt);
+            }
+        });
+
+        btnOpenManagerRdf.setText("RDFs");
+        btnOpenManagerRdf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpenManagerRdfActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -403,28 +406,41 @@ public class FrmPrincipal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tabMapping, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(tabMapping, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnBringPaper)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDiseases)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnIntegrarSintomas)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnLocalRDF)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnOpenManagerRdf)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton1)
+                        .addGap(0, 278, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnBringPaper)
-                    .addComponent(btnDiseases))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
-                .addComponent(tabMapping, javax.swing.GroupLayout.PREFERRED_SIZE, 553, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                    .addComponent(btnDiseases)
+                    .addComponent(btnIntegrarSintomas)
+                    .addComponent(btnLocalRDF)
+                    .addComponent(btnOpenManagerRdf)
+                    .addComponent(jButton1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tabMapping, javax.swing.GroupLayout.PREFERRED_SIZE, 459, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        setSize(new java.awt.Dimension(1091, 720));
+        setSize(new java.awt.Dimension(902, 593));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -440,17 +456,17 @@ public class FrmPrincipal extends javax.swing.JFrame {
         String url = "";
         String prop = "";
         if (!datatype.contains("#")) {
-            url = global.cortaAte(datatype, '/');
-            prop = global.cortaDepoisDe(datatype, '/');
+            url = Functions.cortaAte(datatype, '/');
+            prop = Functions.cortaDepoisDe(datatype, '/');
 
         } else {
-            url = global.cortaAte(datatype, '#');
-            prop = global.cortaDepoisDe(datatype, '#');
+            url = Functions.cortaAte(datatype, '#');
+            prop = Functions.cortaDepoisDe(datatype, '#');
         }
         System.out.println("url do NameSpace => " + url);
 
         for (Map.Entry<String, String> map : Ontology.getOntologyPrefixies(od).entrySet()) {
-            System.out.println(global.printTab("Map<String, String>: " + map.getKey() + ":" + map.getValue()));
+            Functions.printTab("Map<String, String>: " + map.getKey() + ":" + map.getValue());
             if (map.getValue() == null ? url == null : map.getValue().equals(url)) {
                 prefixo = map.getKey() + ":" + prop;
                 System.out.println("Dentro do if => retorno no método retornarPrefixoNs: " + prefixo);
@@ -471,22 +487,27 @@ public class FrmPrincipal extends javax.swing.JFrame {
         DefaultMutableTreeNode propriedades = new DefaultMutableTreeNode("Properties");
         DefaultMutableTreeNode dados = new DefaultMutableTreeNode("Datatype");
 
-        for (OntClass classe : Ontology.getClasses(ontologia)) {
+        List<OntClass> ontClass = Ontology.getClasses(ontologia);
+        List<String> ontProps = Ontology.getProperties(ontologia);
+        List<DatatypeProperty> ontDatatype = Ontology.getDatatypes(ontologia);
+
+        int c = 0;
+
+        for (OntClass classe : ontClass) {
             System.out.println("[*** OntClass within tree]" + classe.getLocalName());
             DefaultMutableTreeNode cls = new DefaultMutableTreeNode(classe.getLocalName());
             classes.add(cls);
         }
-        for (String propObjeto : Ontology.getProperties(ontologia)) {
+        for (String propObjeto : ontProps) {
             DefaultMutableTreeNode po = new DefaultMutableTreeNode(propObjeto);
             propriedades.add(po);
         }
-        for (DatatypeProperty dado : Ontology.getDatatypes(ontologia)) {
-            System.out.println(global.printTab("Datatypes da ontologia " + dado.toString()));
+        for (DatatypeProperty dado : ontDatatype) {
+            Functions.printTab("Datatypes da ontologia " + dado.toString());
             String d = dado.toString();
 
-//          usae map<String prefixo, String url> here.
             String pre = this.getNSPrefix(d, ontologia);
-            System.out.println(global.printTab("prefixo encontrado: " + pre));
+            Functions.printTab("prefixo encontrado: " + pre);
 
             DefaultMutableTreeNode dp = new DefaultMutableTreeNode(pre);
             dados.add(dp);
@@ -526,30 +547,30 @@ public class FrmPrincipal extends javax.swing.JFrame {
         });
     }
 
-    /*EVENTOS*/
-
+    /* Eventos*/
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-//        new SidaUI().setVisible(true);
         new FrmSparql().setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnOpenOntologyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenOntologyActionPerformed
         File f;
         try {
-            f = global.chooseFile();
+            f = Functions.chooseFile();
+
             domainOntologyName = f.getName();
 
             domainOntology = Ontology.getOntology(f);
-//            global.print("frmPrincipal", "btnOpenOntology()", domainOntology.getNsPrefixURI(""));
 
             ontologyUrl = domainOntology.getNsPrefixURI("");
-            this.txtOD.setText(domainOntologyName);
             this.fillOntoTree(domainOntology, domainOntologyName);
+
         } catch (FileNotFoundException e) {
+        } catch (IOException ex) {
+            Logger.getLogger(FrmPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnOpenOntologyActionPerformed
 
-    private void btnOpenDBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenDBActionPerformed
+    private void btnChooseDBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseDBActionPerformed
         //Necessário instanciar
 //        FrmEscolherBancoDeDados frmBD = new FrmEscolherBancoDeDados();
         FrmChooseDatabase frmCdb = new FrmChooseDatabase();
@@ -568,55 +589,60 @@ public class FrmPrincipal extends javax.swing.JFrame {
 //            System.out.println(Comum.printTab(out));
 //            Rdb.getColumnsOfTable(out);
 //        }
-        this.txtBD.setText(global.NOME_BD_MYSQL);
-        this.arvDatabase.setModel(frmCdb.arvBaseDeDados);
+        this.arvDatabase.setModel(frmCdb.databaseTree);
         changeIcon(arvDatabase);
-    }//GEN-LAST:event_btnOpenDBActionPerformed
+    }//GEN-LAST:event_btnChooseDBActionPerformed
 
     private void btnAbrirFrmAssertionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAbrirFrmAssertionsActionPerformed
-//        new FrmGerarR2RMLPorAssertions().setVisible(true);
         new FrmGenerateR2rmlByAssertions().setVisible(true);
     }//GEN-LAST:event_btnAbrirFrmAssertionsActionPerformed
 
-    private void btnSaveAssertionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveAssertionsActionPerformed
-        Assertion assertion = new Assertion();
-        assertion.setOrigem(assertBD);
-        assertion.setAlvo(assertOD);
-
-        System.out.println("[***Assertion]" + assertion.getOrigem() + assertion.getAlvo());
-        assertionsList.add(assertion);
-        this.txtAssertions.setBackground(Color.WHITE);
-        this.txtAssertions.setText("");
-    }//GEN-LAST:event_btnSaveAssertionsActionPerformed
-
+    
     private void arvDatabaseValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_arvDatabaseValueChanged
         assertBD = "";
         assertBD = arvDatabase.getSelectionPath().toString();
         this.txtAssertions.setText(assertBD);
+        this.txtAssertions.setText(assertOD + " --> " + assertBD);
+        this.txtAssertions.setBackground(Color.GREEN);
     }//GEN-LAST:event_arvDatabaseValueChanged
 
     private void arvOntologyValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_arvOntologyValueChanged
         assertOD = "";
         assertOD = arvOntology.getSelectionPath().toString();
-        this.txtAssertions.setText(assertBD + " --> " + assertOD);
-        this.txtAssertions.setBackground(Color.GREEN);
+        this.txtAssertions.setText(assertOD + "  -->  " + assertBD);
     }//GEN-LAST:event_arvOntologyValueChanged
 
     private void btnOpenManagerRdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenManagerRdfActionPerformed
-        // TODO add your handling code here:
 //        new FrmManagerRDF().setVisible(true);
         new FrmSparql().setVisible(true);
     }//GEN-LAST:event_btnOpenManagerRdfActionPerformed
 
     private void btnDiseasesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDiseasesActionPerformed
-        // TODO add your handling code here:
         new FrmFilterDiseasesBySymptoms().setVisible(true);
     }//GEN-LAST:event_btnDiseasesActionPerformed
 
     private void btnBringPaperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBringPaperActionPerformed
-        // TODO add your handling code here:
         new FrmFindPaperByTheme().setVisible(true);
     }//GEN-LAST:event_btnBringPaperActionPerformed
+
+    private void btnIntegrarSintomasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIntegrarSintomasActionPerformed
+        new FrmSymptomsIntegration().setVisible(rootPaneCheckingEnabled);
+    }//GEN-LAST:event_btnIntegrarSintomasActionPerformed
+
+    private void btnLocalRDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLocalRDFActionPerformed
+        LocalSparqlQueries.localRDF();
+    }//GEN-LAST:event_btnLocalRDFActionPerformed
+
+    private void btnSaveAssertionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveAssertionActionPerformed
+        Assertion assertion = new Assertion();
+        assertion.setOrigem(assertOD);
+        assertion.setAlvo(assertBD);
+
+        System.out.println("[***Assertion] " + assertion.getOrigem() + assertion.getAlvo());
+        assertionsList.add(assertion);
+        this.txtAssertions.setBackground(Color.WHITE);
+        this.txtAssertions.setText("");
+    }//GEN-LAST:event_btnSaveAssertionActionPerformed
 
     /**
      * @param args the command line arguments
@@ -648,8 +674,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-//                new FrmPrincipal().setVisible(true);
-                new FrmFilterDiseasesBySymptoms().setVisible(true);
+                new FrmPrincipal().setVisible(true);
             }
         });
     }
@@ -660,13 +685,15 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton btnAbrirFrmAssertions;
     private javax.swing.JButton btnAddCompare;
     private javax.swing.JButton btnBringPaper;
+    private javax.swing.JButton btnChooseDB;
     private javax.swing.JButton btnCloseNoSave;
     private javax.swing.JButton btnDiseases;
-    private javax.swing.JButton btnOpenDB;
+    private javax.swing.JButton btnIntegrarSintomas;
+    private javax.swing.JButton btnLocalRDF;
     private javax.swing.JButton btnOpenManagerRdf;
     private javax.swing.JButton btnOpenOntology;
     private javax.swing.JButton btnSave;
-    private javax.swing.JButton btnSaveAssertions;
+    private javax.swing.JButton btnSaveAssertion;
     private javax.swing.JButton btnSaveOtherFolder;
     private javax.swing.JButton btnSetLinkSpec;
     private javax.swing.JComboBox<String> cbCompareProperty;
@@ -693,7 +720,5 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JTabbedPane tabMapping;
     private javax.swing.JTextArea txtAreaLinkSpec;
     private javax.swing.JTextField txtAssertions;
-    private javax.swing.JTextField txtBD;
-    private javax.swing.JTextField txtOD;
     // End of variables declaration//GEN-END:variables
 }

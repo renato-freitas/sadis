@@ -11,7 +11,7 @@ import lar.entidade.Assertion;
 import lar.negocio.TemplatesR2RML;
 import lar.negocio.Transforma;
 import static lar.telas.SidaUI.colunasParaSQL;
-import lar.util.global;
+import lar.util.Functions;
 
 /**
  *
@@ -29,7 +29,7 @@ public class FrmGerarDumpPorArquivoR2RML extends javax.swing.JFrame {
    
     
     private void geraR2RMLCustomizado(){
-        areaArquivoR2RML.append(TemplatesR2RML.prefixosPadrao());
+        areaArquivoR2RML.append(TemplatesR2RML.getPrefixies());
         geraMapeamentoDeClasse();
     }
     
@@ -65,19 +65,19 @@ public class FrmGerarDumpPorArquivoR2RML extends javax.swing.JFrame {
             
             
             if(alvo[1].contains("Classes")){
-                System.out.println(global.printTab("Gerando R2RML: dentro de if Classes"));
+                Functions.printTab("Gerando R2RML: dentro de if Classes");
                 
                 String pk = origem[2].substring(0, origem[2].lastIndexOf(" "));
                 colunas += pk;
                 nomeDaTabelaAtual = origem[1];
                 areaArquivoR2RML.append(TemplatesR2RML.mapeaTabelaLogica(origem[1], colunasParaSQL));
-                areaArquivoR2RML.append(TemplatesR2RML.mapeaSujeito(global.prefixoOD(), alvo2, pk));
+                areaArquivoR2RML.append(TemplatesR2RML.mapeaSujeito(Functions.prefixoOD(), alvo2, pk));
             }
             else{
                 colunas += origem2;
             }
             if(alvo[1].contains("Datatype")){
-                areaArquivoR2RML.append(TemplatesR2RML.mapeaPredicadoObjeto(global.prefixoOD(), alvo2, origem2));
+                areaArquivoR2RML.append(TemplatesR2RML.mapeaPredicadoObjeto(Functions.prefixoOD(), alvo2, origem2));
             }
         }
     }

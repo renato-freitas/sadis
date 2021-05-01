@@ -9,7 +9,7 @@ import static lar.telas.FrmPrincipal.domainOntology;
 import static lar.telas.FrmPrincipal.domainOntologyName;
 import static lar.telas.FrmPrincipal.ontologyUrl;
 import lar.util.Constants;
-import lar.util.global;
+import lar.util.Functions;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.query.Query;
@@ -461,7 +461,7 @@ public class FrmSparql extends javax.swing.JFrame {
     private void teste() {
         File f;
         try {
-            f = global.chooseFile();
+            f = Functions.chooseFile();
             String inputFileName = f.getName();
             Model model = ModelFactory.createDefaultModel();
 

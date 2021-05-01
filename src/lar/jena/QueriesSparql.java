@@ -1,11 +1,6 @@
 package lar.jena;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 import lar.entidade.ResourceWeb;
@@ -14,10 +9,7 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDFS;
 
 /**
  * @version 1
@@ -26,24 +18,66 @@ import org.apache.jena.vocabulary.RDFS;
  */
 public class QueriesSparql {
 
+    final static String LANG_PT = "pt";
+
+    
+
     /**
-     * Faz uma consulta ao endpoint da DBpedia para obter uma lista de sintomas a partir dos Recursos dbo:Disease.
-     * @see Fazer uma consulta federada aos endpoints wikidata e dbpedia para obter mais sintomas
+     * Faz uma consulta ao endpoint da DBpedia para obter uma lista de sintomas
+     * a partir dos Recursos dbo:Disease.
+     *
+     * @see Fazer uma consulta federada aos endpoints wikidata e dbpedia para
+     * obter mais sintomas
      * @return sintomas: rdfs:label e rdfs:comment
      */
     public static DefaultListModel getSymptomsFromDbpedia() {
+        String varSymptom = "symptom", varSymptomLabel = "symptomLabel", varSymptomComment = "symptomComment";
         String query = Constants.DEFAULT_SPARQL_PREFIXES
-                + " SELECT DISTINCT ?s ?sl ?c WHERE { \n"
-                + "   ?d a dbo:Disease .\n"
-                + "   ?d dbo:symptom ?s .\n"
-                + "   ?s rdfs:label ?sl .\n"
-                + "   ?s rdfs:comment ?c .\n"
-                + getFilter(getLang("?sl", "pt"))
-                + getFilter(getLang("?c", "pt"))
+                + " SELECT DISTINCT ?symptom ?symptomLabel ?symptomComment WHERE { \n"
+                + "   ?disease dbo:symptom ?symptom .\n"
+                + "   ?symptom  rdfs:label ?symptomLabel .\n"
+                + "   OPTIONAL {\n"
+                + "     ?symptom rdfs:comment ?symptomComment .\n"
+                + "     FILTER(LANG(?symptomComment)=\"pt\")"
+                + "   }\n"
+                + "   FILTER(LANG(?symptomLabel)=\"pt\")"
                 + "}\n"
-                + getOrderby("?sl");
+                + "ORDER BY ?symptomLabel";
 
-        return getSparqlQueryResult(Constants.STR_DBPEDIA_ENDPOINT, query, "s", "sl", "c");
+        System.out.println("lar.jena.QueriesSparql.getSymptomsFromDbpedia()" + query);
+
+        try (QueryExecution qe = QueryExecutionFactory.sparqlService(Constants.DBPEDIA_ENDPOINT, query)) {
+            if (qe != null) {
+                ResultSet resultSet = qe.execSelect();
+                DefaultListModel dlm = new DefaultListModel();
+
+                while (resultSet.hasNext()) {
+                    QuerySolution qs = resultSet.next();
+                    ResourceWeb rscWeb = new ResourceWeb();
+
+                    Iterator<String> it = qs.varNames();
+                    while (it.hasNext()) {
+                        String var = it.next();
+
+                        if (var.equals(varSymptom)) {
+                            rscWeb.setUri(qs.getResource(varSymptom).toString());
+                            rscWeb.setLabel(qs.getLiteral(varSymptomLabel).toString());
+                            continue;
+                        }
+//                        if (var.equals(varSymptomComment)) {
+//                            rscWeb.setImage(qs.getLiteral(varSymptomComment).toString());
+//                            continue;
+//                        }
+                    }
+                    dlm.addElement(rscWeb);
+                }
+                qe.close();
+//                System.out.println("lar.jena.QueriesSparql.getSymptomsFromDbpedia()");
+                return dlm;
+            } else {
+                return null;
+            }
+        }
     }
 
     public static DefaultListModel getDiseasesBySymptomnsFromDbpedia(ListModel<String> symptomns) {
@@ -57,8 +91,7 @@ public class QueriesSparql {
                 + "   filter(lang(?c) = \"pt\")\n"
                 + "}\n"
                 + "order by(?dl)";
-        System.out.println("lar.jena.QueriesSparql.getDiseasesBySymptomnsFromDbpedia()" + query);
-        return getSparqlQueryResult(Constants.STR_DBPEDIA_ENDPOINT, query, "d", "dl", "c");
+        return getSparqlQueryResult(Constants.DBPEDIA_ENDPOINT, query, "d", "dl", "c");
     }
 
     /**
@@ -88,7 +121,7 @@ public class QueriesSparql {
                 + "       }\n"
                 + "    }\n"
                 + " }";
-        ResourceWeb rscWeb = getSparqlQueryResultFirst__teste(Constants.STR_WIKIDATA_ENDPOINT, query, "w", "i", "d", "dl");
+        ResourceWeb rscWeb = getSparqlQueryResultFirst__teste(Constants.WIKIDATA_ENDPOINT, query, "w", "i", "d", "dl");
         rscWeb.setLabel(dbpediaDisease.getLabel());
         return rscWeb;
     }
@@ -117,7 +150,7 @@ public class QueriesSparql {
         System.out.println("lar.jena.QueriesSparql.getDescriptonAndAlsoKnowAsFromWikiDataByDrug(), query > " + query);
         DefaultListModel alsoKnowAs = new DefaultListModel();
         DefaultListModel activeIngredientIn = new DefaultListModel();
-        try (QueryExecution qe = QueryExecutionFactory.sparqlService(Constants.STR_WIKIDATA_ENDPOINT, query)) {;
+        try (QueryExecution qe = QueryExecutionFactory.sparqlService(Constants.WIKIDATA_ENDPOINT, query)) {;
             if (qe != null) {
                 ResultSet rs = qe.execSelect();
                 ResourceWeb rscWeb = new ResourceWeb();
@@ -142,6 +175,190 @@ public class QueriesSparql {
 //        return sss;
     }
 
+    //WIKIDATA SPACE
+    /**
+     * Retorna uma lista de sinais. Prioritariamente em português. Caso
+     * contrário em inglês.
+     */
+    public static DefaultListModel getWikiSignals() {
+        String signal = "signal", signalLabel = "label",
+                query = Constants.RDF_PREFIX
+                + Constants.RDFS_PREFIX
+                + "PREFIX wd: <http://www.wikidata.org/entity/>\n"
+                + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n"
+                + "SELECT DISTINCT ?signal ?label WHERE {\n"
+                + "  ?signal a|" + Constants.WDT_P31_INSTANCEOF + "|rdf:type|" + Constants.WDT_P279_SUBCLASSOF + Constants.WD_Q1441305_SIGNAL[0] + ";\n"
+                + "          rdfs:label ?ptLabel ;\n"
+                + "          rdfs:label ?enLabel .\n"
+                + "  FILTER(LANG(?ptLabel)=\"pt\") .\n"
+                + "  FILTER(LANG(?enLabel)=\"en\") .\n"
+                + "  BIND(IF(?ptLabel=\"\", ?enLabel, ?ptLabel) AS ?label)\n"
+                + "}\n"
+                + "ORDER BY ?label";
+
+        System.out.println("lar.jena.QueriesSparql.getWikiSignals()" + query);
+
+        try (QueryExecution qe = QueryExecutionFactory.sparqlService(Constants.WIKIDATA_ENDPOINT, query)) {
+            if (qe != null) {
+                ResultSet resultSet = qe.execSelect();
+                DefaultListModel dlm = new DefaultListModel();
+
+                while (resultSet.hasNext()) {
+                    QuerySolution qs = resultSet.next();
+                    ResourceWeb rscWeb = new ResourceWeb();
+
+                    Iterator<String> it = qs.varNames();
+                    while (it.hasNext()) {
+                        String var = it.next();
+
+                        if (var.equals(signal)) {
+                            rscWeb.setUri(qs.getResource(signal).toString());
+                            rscWeb.setLabel(qs.getLiteral(signalLabel).toString());
+                        }
+                    }
+                    dlm.addElement(rscWeb);
+                }
+                qe.close();
+                return dlm;
+            } else {
+                return null;
+            }
+        }
+    }
+
+//    public static DefaultListModel getSignalsAndSymptomsFromWikidata() {;
+    public static DefaultListModel getWikiSymptoms() {
+        String symptom = "symptom", symptomLabel = "symptomLabel", symptomComment = "symptomLabel";
+        String signal = "signal", signalLabel = "signalLabel", signalComment = "signalComment";
+
+        String query = Constants.DEFAULT_SPARQL_PREFIXES
+                + " SELECT DISTINCT ?symptom ?symptomLabel ?symptomComment ?signal ?signalLabel ?signalComment WHERE {\n"
+                + "  {\n"
+                + "    ?symptom " + Constants.WDT_P31_INSTANCEOF + "|" + Constants.WDT_P279_SUBCLASSOF + Constants.WD_Q169872_SYMPTOM + " .\n"
+                + "    ?symptom rdfs:label ?symptomLabel .\n"
+                + "    OPTIONAL { ?symptom schema:description ?symptomComment . FILTER(LANG(?symptomComment)=\"pt\") .}\n"
+                + "    FILTER(LANG(?symptomLabel)=\"pt\") .\n"
+                + "  }\n"
+                + "  UNION\n"
+                + "  { \n"
+                + "    ?signal " + Constants.WDT_P8656_SYMPTOM_ONTOLOGY_ID + " ?id ;\n"
+                + "            rdfs:label ?signalLabel . \n"
+                + "    OPTIONAL { ?signal schema:description ?signalComment . FILTER(LANG(?signalComment)=\"pt\") .}\n"
+                + "    FILTER(LANG(?signalLabel)=\"pt\") . \n"
+                + "  } \n"
+                + "}\n"
+                + "ORDER BY ?symptomLabel ?signalLabel";
+
+        System.out.println("lar.jena.QueriesSparql.getSignalsAndSymptomsFromWikidata()" + query);
+        try (QueryExecution qe = QueryExecutionFactory.sparqlService(Constants.WIKIDATA_ENDPOINT, query)) {
+            if (qe != null) {
+                ResultSet resultSet = qe.execSelect();
+                DefaultListModel dlm = new DefaultListModel();
+
+                while (resultSet.hasNext()) {
+                    QuerySolution qs = resultSet.next();
+                    ResourceWeb rscWeb = new ResourceWeb();
+
+                    Iterator<String> it = qs.varNames();
+                    for (; it.hasNext();) {
+                        String var = it.next();
+
+                        if (var.equals(symptom)) {
+                            rscWeb.setUri(qs.getResource(symptom).toString());
+                            rscWeb.setLabel(qs.getLiteral(symptomLabel).toString());
+                            continue;
+                        }
+                        if (var.equals(signal)) {
+                            rscWeb.setUri(qs.getResource(signal).toString());
+                            rscWeb.setLabel(qs.getLiteral(signalLabel).toString());
+                            continue;
+                        }
+                    }
+                    dlm.addElement(rscWeb);
+                }
+                qe.close();
+                return dlm;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public static String getWikiComment(ResourceWeb resource) {
+        String uri = "<" + resource.getUri() + ">";
+        String varComment = "comment", comment = "";
+        String query = "PREFIX schema: <http://schema.org/>\n"
+                + " SELECT ?comment WHERE {\n"
+                + uri + " schema:description ?enComment.\n"
+                + "  OPTIONAL {\n"
+                + uri + " schema:description ?ptComment.\n"
+                + "    FILTER((LANG(?ptComment)) = \"pt\")\n"
+                + "  }\n"
+                + "  FILTER((LANG(?enComment)) = \"en\")\n"
+                + "  BIND(IF(!(BOUND(?ptComment)), ?enComment, ?ptComment) AS ?comment)\n"
+                + "}";
+
+        System.out.println("lar.jena.QueriesSparql.getSymptomsFromDbpedia()" + query);
+
+        try (QueryExecution qe = QueryExecutionFactory.sparqlService(Constants.WIKIDATA_ENDPOINT, query)) {
+            if (qe != null) {
+                ResultSet resultSet = qe.execSelect();
+                while (resultSet.hasNext()) {
+                    QuerySolution qs = resultSet.next();
+                    comment = qs.getLiteral(varComment).toString();
+
+                    System.out.println("lar.jena.QueriesSparql.getWikiComment(), comment > " + comment);
+//                    Iterator<String> it = qs.varNames();
+//                    while (it.hasNext()) {
+//                        String var = it.next();
+//                        if (var.equals(varComment)) {
+//                            comment = qs.getResource(varComment).toString();
+//                        }
+//                    }
+
+                }
+                qe.close();
+                return comment;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public static String getCommentFromDbpedia(ResourceWeb dbpediaResource) {
+        String uri = "<" + dbpediaResource.getUri() + ">";
+        String varComment = "comment";
+        String query = Constants.DEFAULT_SPARQL_PREFIXES
+                + " SELECT ?comment WHERE {\n"
+                + uri + " rdfs:comment ?comment .\n"
+                + getFilter(getLang(varComment, LANG_PT))
+                + "}";
+
+        System.out.println("lar.jena.QueriesSparql.getSymptomsFromDbpedia()" + query);
+
+        try (QueryExecution qe = QueryExecutionFactory.sparqlService(Constants.DBPEDIA_ENDPOINT, query)) {
+            if (qe != null) {
+                ResultSet resultSet = qe.execSelect();
+                String comment = "";
+                while (resultSet.hasNext()) {
+                    QuerySolution qs = resultSet.next();
+                    Iterator<String> it = qs.varNames();
+                    while (it.hasNext()) {
+                        String var = it.next();
+                        if (var.equals(varComment)) {
+                            comment = qs.getLiteral(varComment).toString();
+                            continue;
+                        }
+                    }
+                }
+                qe.close();
+                return comment;
+            } else {
+                return null;
+            }
+        }
+    }
+
     //MÉTODO AUXILIARES
     private static String replaceUriDbpediaToResourcePrefix(String uri) {
         return uri.replace("http://dbpedia.org/resource/", "dbr:");
@@ -151,7 +368,7 @@ public class QueriesSparql {
         return uri.replace("http://www.wikidata.org/entity/", "wd:");
     }
 
-    // SPARQL AUXILIAR METHODS
+    // AUXILIAR SPARQL METHODS
     public static DefaultListModel getSparqlQueryResult(String endpoint, String query, String resource, String l, String cl) {
         DefaultListModel result = new DefaultListModel();
         try (QueryExecution qe = QueryExecutionFactory.sparqlService(endpoint, query)) {
@@ -208,7 +425,6 @@ public class QueriesSparql {
     }
 
     public static ResourceWeb getSparqlQueryResultFirst__teste(String endpoint, String query, String resource, String image, String drug, String drugLabel) {
-
         try (QueryExecution qe = QueryExecutionFactory.sparqlService(endpoint, query)) {;
             if (qe != null) {
                 DefaultListModel drugs = new DefaultListModel();
@@ -249,14 +465,6 @@ public class QueriesSparql {
         }
     }
 
-    
-    
-    
-    
-    private static String getVariables(String variables) {
-        return " " + variables + " ";
-    }
-
     private static String getValues(String variable, ListModel<String> values) {
         String _values = "VALUES " + variable + " { ";
 
@@ -279,21 +487,57 @@ public class QueriesSparql {
     }
 
     private static String getFilter(String filter) {
-        return Constants.STR_FILTER + "(" + filter + ")\n";
+        return Constants.STR_FILTER + "(" + filter + ") .\n";
     }
 
     private static String getLang(String var, String lang) {
-        return Constants.STR_LANG + "(" + var + ")=\""+lang+"\"";
+        return Constants.STR_LANG + "(?" + var + ")=\"" + lang + "\"";
     }
 
     private static String getOrderby(String variable) {
-        return Constants.STR_ORDER_BY + "(" + variable + ")\n";
+        return Constants.STR_ORDER_BY + " ?" + variable + " \n";
     }
 
     private static String getLimit(String value) {
         return Constants.STR_LIMIT + " " + value + "\n";
     }
 
+    /**
+     * Faz uma consulta ao endpoint da Wikidaata para obter uma lista de
+     * sintomas que são instâncias de WD:Q169872_SYMPTOMNS.
+     *
+     * @return sintomas
+     */
+    /**
+     * public static DefaultListModel getSymptomsFromWikidata() { String symptom
+     * = "symptom", symptomLabel = "symptomLabel"; String query =
+     * Constants.DEFAULT_SPARQL_PREFIXES + " select distinct ?symptom
+     * ?symptomLabel where {\n" + " ?symptom " +
+     * Constants.STR_WDT_P31_INSTANCEOF + "|" + Constants.WDT_P279_SUBCLASSOF +
+     * Constants.WD_Q169872_SYMPTOM + " ;\n" + " rdfs:label ?symptomLabel .\n" +
+     * getFilter(getLang(symptomLabel, LANG_PT)) + "}\n" +
+     * getOrderby(symptomLabel);
+     *
+     * try (QueryExecution qe =
+     * QueryExecutionFactory.sparqlService(Constants.STR_WIKIDATA_ENDPOINT,
+     * query)) { if (qe != null) { ResultSet resultSet = qe.execSelect();
+     * DefaultListModel dlm = new DefaultListModel();
+     *
+     * while (resultSet.hasNext()) { QuerySolution qs = resultSet.next();
+     * ResourceWeb rscWeb = new ResourceWeb();
+     *
+     * Iterator<String> it = qs.varNames(); while (it.hasNext()) { String var =
+     * it.next();
+     *
+     * if (var.equals(symptom)) {
+     * rscWeb.setUri(qs.getResource(symptom).toString());
+     * rscWeb.setLabel(qs.getLiteral(symptomLabel).toString()); continue; } if
+     * (var.equals("a")) { rscWeb.setImage(qs.getResource("a").toString());
+     * continue; } } dlm.addElement(rscWeb); } qe.close(); return dlm; } else {
+     * return null; } } }
+     *
+     * @return
+     */
     /**
      *
      * // public static List<String> getSymptomsFromWikidata() { //

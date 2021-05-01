@@ -20,7 +20,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import lar.entidade.Assertion;
 import lar.jena.Ontology;
-import lar.util.global;
+import lar.util.Functions;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
@@ -30,7 +30,6 @@ import org.apache.jena.ontology.OntModel;
  * @since 27/06/2018
  */
 public class SidaUI extends javax.swing.JFrame {
-
     
     public static String nomeDaOD = "File Name";
     public static OntModel ontologiaDeDominio;
@@ -237,7 +236,6 @@ public class SidaUI extends javax.swing.JFrame {
         FrmEscolherBancoDeDados frmBD = new FrmEscolherBancoDeDados();
         frmBD.setVisible(true);
         
-        txtDB.setText(global.NOME_BD_MYSQL);
         arvBD.setModel(frmBD.arvBaseDeDados);
         mudaIcone(arvBD);
     }
@@ -248,7 +246,7 @@ public class SidaUI extends javax.swing.JFrame {
     private void btnAbrirODActionPerformed(java.awt.event.ActionEvent evt) {
         File f;
         try {
-            f = global.chooseFile();
+            f = Functions.chooseFile();
             nomeDaOD = f.getName();
 
             OntModel od = Ontology.getOntology(f);
@@ -286,7 +284,7 @@ public class SidaUI extends javax.swing.JFrame {
 
     /** Chama a tela de Visualização das asserções. */
     private void btnAbrirFrmAssertionsActionPerformed(java.awt.event.ActionEvent evt) {
-        new FrmGerarR2RMLPorAssertions().setVisible(true);
+//        new FrmGerarR2RMLPorAssertions().setVisible(true);
     }
 
     /** Chama a tela de especificação dos links semânticos. */
@@ -314,12 +312,12 @@ public class SidaUI extends javax.swing.JFrame {
             propriedades.add(po);
         });
         for (DatatypeProperty dado : Ontology.getDatatypes(ontologia)) {
-            System.out.println(global.printTab("Datatypes da ontologia "+dado.toString()));
+            Functions.printTab("Datatypes da ontologia "+dado.toString());
             String d = dado.toString();
             
 //          usar map<String prefixo, String url> aqui.
             String pre = this.retornaPrefixoNS(d, ontologia);
-            System.out.println(global.printTab("prefixo encontrado: "+pre));
+            Functions.printTab("prefixo encontrado: "+pre);
             
             DefaultMutableTreeNode dp = new DefaultMutableTreeNode(pre);
             dados.add(dp);
@@ -370,19 +368,19 @@ public class SidaUI extends javax.swing.JFrame {
         if (!datatype.contains("#")) {
 //            url = datatype.substring(0, datatype.lastIndexOf('/') + 1);
 //            prop = datatype.substring(datatype.lastIndexOf('/') + 1, datatype.length());
-            url = global.cortaAte(datatype, '/');
-            prop = global.cortaDepoisDe(datatype, '/');
+            url = Functions.cortaAte(datatype, '/');
+            prop = Functions.cortaDepoisDe(datatype, '/');
 
         } else {
 //            url = datatype.substring(0, datatype.lastIndexOf('#') + 1);
 //            prop = datatype.substring(datatype.lastIndexOf('#') + 1, datatype.length());
-            url = global.cortaAte(datatype, '#');
-            prop = global.cortaDepoisDe(datatype, '#');
+            url = Functions.cortaAte(datatype, '#');
+            prop = Functions.cortaDepoisDe(datatype, '#');
         }
         System.out.println("url do NameSpace => "+url);
         
         for (Entry<String, String> map : Ontology.getOntologyPrefixies(od).entrySet()) {
-            System.out.println(global.printTab("Map<String, String>: "+map.getKey() + ":" + map.getValue()));
+            Functions.printTab("Map<String, String>: "+map.getKey() + ":" + map.getValue());
             if(map.getValue() == null ? url == null : map.getValue().equals(url)){
                 prefixo = map.getKey()+":"+prop;
                 System.out.println("Dentro do if => retorno no método retornarPrefixoNs: "+prefixo);

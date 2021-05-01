@@ -1,7 +1,7 @@
 package lar.negocio;
 
 import lar.telas.FrmPrincipal;
-import lar.util.global;
+import lar.util.Functions;
 
 /**
  *
@@ -9,25 +9,30 @@ import lar.util.global;
  */
 public class TemplatesR2RML {
     
+    final String TWO_SPACES = "  ", FOUR_SPACES = "    ";
+    
     /**
      *Obtém o cabeçalho com os prefixos default para arquivo R2RML no formato .ttl.
      * @return String Cabeçalho com prefixos pradrão.
      */
-    public static String prefixosPadrao(){
+    public static String getPrefixies(){
         return "@prefix map: <#>.\n" +
                 "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.\n" +
                 "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.\n" +
                 "@prefix rr: <http://www.w3.org/ns/r2rml#>.\n" +
                 "@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.\n" +
                 "@prefix foaf: <http://xmlns.com/foaf/0.1/>.\n"+
-                "@prefix "+ global.cortaExtensao(FrmPrincipal.domainOntologyName)+": <"+FrmPrincipal.ontologyUrl+">.";
+                "@prefix "+ Functions.cortaExtensao(FrmPrincipal.domainOntologyName)+": <"+FrmPrincipal.ontologyUrl+">.";
     }
     
+    /**
+     * @return Query SQL
+     */
     public static String mapeaTabelaLogica(String tabela, String sql) {
         return "\n\nmap:"+tabela+" a rr:TriplesMap;\n"
                 + "   rr:logicalTable [ \n"
                 + "   rr:sqlQuery \"\"\"\n"
-                + "   SELECT "//id, doc_ident, nome, vencimento\n"
+                + "   SELECT "
                 + " " +sql.substring(0, sql.lastIndexOf(",")) + "\n"
                 + "   FROM "+tabela+"\n"
                 + "   \"\"\"\n"
@@ -36,7 +41,10 @@ public class TemplatesR2RML {
     
     
     public static String mapeaSujeito(String prefixo, String tabela, String pk){
-        return "   rr:subjectMap [ rr:class "+prefixo+":"+tabela+"; rr:template \""+tabela+"/{`"+pk+"`}\"; ];\n";
+        return "   rr:subjectMap [ \n"
+                + "      rr:class "+prefixo+":"+tabela+"; \n"
+                + "      rr:template \""+tabela+"/{`"+pk+"`}\";\n"
+                + "  ];\n";
     }
     
     

@@ -1,22 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lar.telas;
 
-import java.awt.Component;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JTree;
+import javax.swing.DefaultListModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import lar.entidade.Assertion;
-import lar.util.global;
+import lar.util.Functions;
 
 /**
  *
@@ -30,7 +21,7 @@ public class FrmGenerateR2rmlByAssertions extends javax.swing.JFrame {
     public FrmGenerateR2rmlByAssertions() {
         initComponents();
         this.fillTreeWithAssertions(FrmPrincipal.assertionsList);
-        global.changeIcon(this.treeAssertions);
+        Functions.changeIcon(this.treeAssertions);
 //        mudaIcone(this.treeAssertions);
     }
 
@@ -38,7 +29,6 @@ public class FrmGenerateR2rmlByAssertions extends javax.swing.JFrame {
      * Preencher a árvoe da Ontologia de Domínio
      */
     private void fillTreeWithAssertions(List<Assertion> lstAsserts) {
-
         if (lstAsserts != null | lstAsserts.size() > 0) {
             DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("All Assertions");
 
@@ -65,7 +55,8 @@ public class FrmGenerateR2rmlByAssertions extends javax.swing.JFrame {
             System.out.println("nó deletado: " + node);
         }
 
-        Iterator<Assertion> iterator = SidaUI.listaDosAsserts.iterator();
+//        Iterator<Assertion> iterator = SidaUI.listaDosAsserts.iterator();
+        Iterator<Assertion> iterator = FrmPrincipal.assertionsList.iterator();
         while (iterator.hasNext()) {
             Assertion os = iterator.next();
             System.out.println("Assert atual: " + os.getOrigem() + os.getAlvo());
@@ -74,7 +65,7 @@ public class FrmGenerateR2rmlByAssertions extends javax.swing.JFrame {
                 System.out.println("Assert: " + os.getOrigem() + os.getAlvo());
                 //System.out.println("Node:" + node.toString());
                 //System.out.println("Deletou o assert da lista de Asserts: "+node);
-                SidaUI.listaDosAsserts.remove(os);
+                FrmPrincipal.assertionsList.remove(os);
                 break;
             }
         }
@@ -96,7 +87,7 @@ public class FrmGenerateR2rmlByAssertions extends javax.swing.JFrame {
         btnCancel = new javax.swing.JButton();
         btnGenerateR2rml = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Generate R2RML by Assertions");
 
         jScrollPane1.setViewportView(treeAssertions);
@@ -122,7 +113,7 @@ public class FrmGenerateR2rmlByAssertions extends javax.swing.JFrame {
             }
         });
 
-        btnGenerateR2rml.setText("To generate R2RML file");
+        btnGenerateR2rml.setText("R2RML file");
         btnGenerateR2rml.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGenerateR2rmlActionPerformed(evt);
@@ -135,7 +126,7 @@ public class FrmGenerateR2rmlByAssertions extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 664, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnBack, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -145,7 +136,7 @@ public class FrmGenerateR2rmlByAssertions extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnBack, btnCancel, btnRemove});
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnBack, btnCancel, btnGenerateR2rml, btnRemove});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -161,7 +152,7 @@ public class FrmGenerateR2rmlByAssertions extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnGenerateR2rml))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         setSize(new java.awt.Dimension(789, 479));
@@ -177,13 +168,27 @@ public class FrmGenerateR2rmlByAssertions extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        SidaUI.listaDosAsserts.clear();
-        SidaUI.colunasParaSQL = "";
+        FrmPrincipal.assertionsList.clear();
+        FrmPrincipal.columnsToSQL = "";
         this.dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnGenerateR2rmlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateR2rmlActionPerformed
-        new FrmDumpByR2rml().setVisible(true);
+        System.out.println("lar.telas.FrmGenerateR2rmlByAssertions.btnGenerateR2rmlActionPerformed()");
+        DefaultListModel dlm = new DefaultListModel();
+        String[] alvo = null;
+        for (Assertion assertion : FrmPrincipal.assertionsList) {
+            alvo = assertion.getAlvo().split(", ");
+            String alvo2 = alvo[2].substring(0, alvo[2].lastIndexOf("]"));
+            dlm.addElement(alvo2);
+        }
+        if (alvo[2].contains("pk")) {
+            new FrmDumpByR2rml().setVisible(true);
+        } else {
+            FrmSelectPrimaryKey spk = new FrmSelectPrimaryKey();
+            spk.setLoadData(dlm);
+            spk.setVisible(true);
+        }
     }//GEN-LAST:event_btnGenerateR2rmlActionPerformed
 
     /**

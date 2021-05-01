@@ -9,31 +9,15 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import lar.telas.FrmPrincipal;
 import lar.telas.SidaUI;
 
 /**
  *
  * @author Renato Freitas
  */
-public class global {
-
-    /*About Database*/
-    public final static String NOME_BD_MYSQL = "tcc2";
-    public final static String POSTGRES_BD_NAME = "sadis";
-    public final static String MYSQL_DRIVER = "jdbc:mysql://localhost/";
-    public final static String MYSQL_URL = "jdbc:mysql://localhost/";
-    public final static String MYSQL_ROOT = "root";
-    public final static String MYSQL_SENHA = "r00t";
-    public final static String POSTGRES_DRIVER = "org.postgresql.Driver";
-    public final static String POSTGRES_URL = "jdbc:postgresql://localhost:5432/";
-    public final static String POSTGRES_ROOT = "root";
-    public final static String POSTGRES_SENHA = "r00t";
-    public final static String SSL = "?useSSL=false";
-
-    /**
-     * Array com os nomes dos bancos de dados mais comuns.
-     */
-    public final static String SGBDs[] = {"", "Mysql", "Postgres"};
+public class Functions {
+    
 
     /**
      * Retorna o nome do arquivo sem a extensão.
@@ -67,7 +51,7 @@ public class global {
     }
 
     public static String prefixoOD() {
-        return cortaExtensao(SidaUI.nomeDaOD);
+        return cortaExtensao(FrmPrincipal.domainOntologyName);
     }
 
     public static File chooseFile() throws FileNotFoundException {
@@ -108,8 +92,8 @@ public class global {
         JOptionPane.showMessageDialog(null, "Sorry, you can not send empty field!", "Error validation!!", JOptionPane.ERROR_MESSAGE);
     }
 
-    public static String printTab(String s) {
-        return "\t[***]" + s;
+    public static void printTab(String s) {
+        System.out.println("\t[***] " + s);
     }
 
     public static void print(String local, String message, String value) {
